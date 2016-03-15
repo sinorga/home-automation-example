@@ -1,0 +1,15 @@
+#app-title {
+  padding-left: 20px;
+  font-size: 24px;
+  line-height: 64px;
+  display: inline;
+  color: white;
+}
+
+#app-title a {
+  color: white;
+}
+
+textarea {
+  height: 8em;
+}
