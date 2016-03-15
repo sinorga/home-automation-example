@@ -10,6 +10,127 @@
   color: white;
 }
 
+#app-nav {
+  float: right;
+  display: inline;
+  line-height: 64px;
+  padding-right: 20px;
+}
+
+#app-nav a {
+  color: white
+}
+
 textarea {
   height: 8em;
+}
+
+/* Detail List */
+.detaillist.item {
+  display: inline;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-left: black solid 1px;
+}
+
+.detaillist.item:first-child {
+  border-left: none
+}
+
+.detaillist.row {
+  list-style: none;
+  border-bottom: black solid 1px;
+}
+
+.detaillist.row:last-child{
+  border-bottom: none
+}
+
+/* Message Boxes */
+.messagebox {
+  padding: 15px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.messagebox.info {
+  color: #00529B;
+  background-color: #BDE5F8;
+}
+.messagebox.success {
+  color: #4F8A10;
+  background-color: #DFF2BF;
+}
+.messagebox.warning {
+  color: #9F6000;
+  background-color: #FEEFB3;
+}
+.messagebox.error {
+	color: #D8000C;
+	background-color: #FFBABA;
+}
+
+
+/* Spinner */
+
+/**
+ * (C)Leanest CSS spinner ever
+ */
+
+@keyframes spin {
+  to { transform: rotate(1turn); }
+}
+
+.progress {
+  position: relative;
+  display: inline-block;
+  width: 5em;
+  height: 5em;
+  margin: 0 .5em;
+  font-size: 12px;
+  text-indent: 999em;
+  overflow: hidden;
+  animation: spin 1s infinite steps(8);
+}
+
+.small.progress {
+  font-size: 4px;
+}
+
+.large.progress {
+  font-size: 24px;
+}
+
+.progress:before,
+.progress:after,
+.progress > div:before,
+.progress > div:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 2.25em; /* (container width - part width)/2  */
+  width: .5em;
+  height: 1.5em;
+  border-radius: .2em;
+  background: #eee;
+  box-shadow: 0 3.5em #eee; /* container height - part height */
+  transform-origin: 50% 2.5em; /* container height / 2 */
+}
+
+.progress:before {
+  background: #555;
+}
+
+.progress:after {
+  transform: rotate(-45deg);
+  background: #777;
+}
+
+.progress > div:before {
+  transform: rotate(-90deg);
+  background: #999;
+}
+
+.progress > div:after {
+  transform: rotate(-135deg);
+  background: #bbb;
 }

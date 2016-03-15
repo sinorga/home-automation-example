@@ -1,0 +1,10 @@
+dataports:
+-   alias: hours
+    format: integer
+    name: hours
+-   alias: temperature
+    format: integer
+    name: temperature
+-   alias: state
+    format: string
+    name: state

@@ -1,21 +1,41 @@
 import React from 'react'
 import { browserHistory } from 'react-router'
+import Button from 'muicss/lib/react/button'
+import { logout } from '../actions/auth'
 
 export default React.createClass({
-  handleLogout(event) {
-    event.preventDefault()
-
-    //localStorage.removeItem('username');
-    localStorage.removeItem('password');
+  contextTypes: {
+    store: React.PropTypes.object
   },
 
-  render() {
+  handleLogout (event) {
+    event.preventDefault()
+
+    logout()(this.context.store.dispatch)
+  },
+
+  componentWillMount () {
+    this.unsubscribe = this.context.store.subscribe(() => {
+      let state = this.context.store.getState()
+
+      // FIXME: This is probably the wrong way to do this.
+      if (state.auth.session === undefined) {
+        browserHistory.push('/login')
+      }
+
+      this.forceUpdate()
+    })
+  },
+
+  componentWillUnmount () {
+    if (typeof this.unsubscribe == "function") { this.unsubscribe() }
+  },
+
+  render () {
     return (
       <div>
-        <h2>Login</h2>
-        <form id="logout-form" onSubmit={this.handleLogout}>
-          <button type="submit">Logout</button>
-        </form>
+        <h2>Logout</h2>
+        <Button color='primary' onClick={this.handleLogout}>Logout</Button>
       </div>
     )
   }
