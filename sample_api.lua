@@ -50,8 +50,7 @@ else
 end
 --#ENDPOINT GET /session
 --
-local _, _, sid = string.find(request.headers.cookie, "sid=([^;]+)")
-local user = User.getCurrentUser({Authorization = "Bearer "..sid})
+local user = currentUser(request)
 if user ~= nil and user.id ~= nil then
     return {["token"] = sid}
 end
@@ -59,14 +58,13 @@ response.code = 400
 response.message = "Session invalid"
 --#ENDPOINT POST /user/{email}/lightbulbs
 --
-local _, _, sid = string.find(request.headers.cookie, "sid=([^;]+)")
 local sn = request.body.serialnumber;
 local link = request.body.link;
-local user = User.getCurrentUser({Authorization = "Bearer "..sid})
+local user = currentUser(request)
 
 if user == nil or user.id == nil then
-  response.message = "Permission Denied"
-  response.code = 304
+  http_error(403, response)
+  return
 end
 
 local owners = User.listRoleUsers({role_id = "full", parameter = sn})
@@ -121,14 +119,14 @@ if user ~= nil then
   end
   return list
 else
-  response = error(403)
+  http_error(403, response)
 end
 --#ENDPOINT GET /user/{email}
 local user = currentUser(request)
 if user ~= nil and user.email == request.parameters.email then
   return User.listUserData({id = user.id})
 else
-  response = error(403)
+  http_error(403, response)
 end
 --#ENDPOINT POST /user/{email}/shared/
 local sn = request.body.serialnumber
@@ -145,7 +143,7 @@ if user ~= nil then
     end
   end
 end
-response = error(403)
+http_error(403, response)
 --#ENDPOINT DELETE /user/{email}/shared/{sn}
 local sn = request.body.serialnumber
 local user = currentUser(request)
@@ -161,7 +159,7 @@ if user ~= nil then
     end
   end
 end
-response = error(403)
+http_error(403, response)
 --#ENDPOINT GET /user/{email}/shared/
 --[[return users.getMe(token).then(function(me) {
     if (me.email != parameters.email) {
