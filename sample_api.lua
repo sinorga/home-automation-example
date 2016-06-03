@@ -1,5 +1,4 @@
-# PUT /user/{email}
---
+--#ENDPOINT PUT /user/{email}
 local ret = User.createUser({
   email = request.parameters.email,
   name = request.parameters.email,
@@ -21,9 +20,7 @@ else
   })
   return 'Ok'
 end
-##MARK##
-# GET /verify/{code}
---
+--#ENDPOINT GET /verify/{code}
 local ret = User.activateUser({code = request.parameters.code})
 if ret ~= nil and ret.status_code ~= nil then
   response.code = ret.status_code
@@ -31,19 +28,13 @@ if ret ~= nil and ret.status_code ~= nil then
 else
   return 'Ok'
 end
-##MARK##
-# PATCH /user/{email}
-key = Object.keys(body)[0];
-return users.getMe(token).then(function(obj) {
-    return users.getUserStorage(obj.id, key).then(function(){
-         return users.updateUserStorage(obj.id, body);
-    }).catch(function(){
-         return users.createUserStorage(obj.id, body);
-    });
-});
-##MARK##
-# POST /session
---
+--#ENDPOINT PATCH /user/{email}
+local user = currentUser(request)
+if user ~= nil then
+  User.updateUserStorage({id = user.id, ["key values"] = request.body})
+  User.createUserStorage({id = user.id, ["key values"] = request.body})
+end
+--#ENDPOINT POST /session
 local ret = User.getUserToken({
   email = request.body.email,
   password = request.body.password
@@ -57,8 +48,7 @@ else
   }
   response.message = {["token"] = ret}
 end
-##MARK##
-# GET /session
+--#ENDPOINT GET /session
 --
 local _, _, sid = string.find(request.headers.cookie, "sid=([^;]+)")
 local user = User.getCurrentUser({Authorization = "Bearer "..sid})
@@ -67,8 +57,7 @@ if user ~= nil and user.id ~= nil then
 end
 response.code = 400
 response.message = "Session invalid"
-##MARK##
-# POST /user/{email}/lightbulbs
+--#ENDPOINT POST /user/{email}/lightbulbs
 --
 local _, _, sid = string.find(request.headers.cookie, "sid=([^;]+)")
 local sn = request.body.serialnumber;
@@ -85,7 +74,7 @@ local owners = User.listRoleUsers({role_id = "full", parameter = sn})
 if link ~= nil then
   if #owners == 0 then
     local resp = User.assignUser({
-      id = user.id, 
+      id = user.id,
       roles = {{role_id = "full", parameter = sn}}
     })
     return {"assignUser", resp}
@@ -114,68 +103,67 @@ else
     User.deassignUserParam({id = user.id, role_id = "full", parameter = sn})
   end
 end
-##MARK##
-# GET /user/{email}/lightbulbs
-var dataports = ['state', 'temperature', 'hours'];
-var user_id;
-return users.getMe(token).then(function(me) {
-    user_id = me.id;
-    return users.getAssignedRoles(user_id);
-}).then(function(roles) {
-    var list = [];
-    var results = [];
-    for (var i = 0; i < roles.length; i++) {
-        if (!roles[i].parameter) continue;
-        var obj = {
-            'serialnumber': roles[i].parameter,
-            'type': roles[i].role_id,
-        }
-        for (var j = 0; j < dataports.length; j++) {
-            obj[dataports[j]] =  devices('$PRODUCT_ID').read(roles[i].parameter, dataports[j])
-                .then(function(data) { return data.value; })
-                .catch(function() {return null;});
-        }
-        list.push(promise.props(obj).then(function(result) {
-            results.push(result);
-        }));
-    }
-    return promise.all(list).then(function() {
-        return results;
-    });
-});
-##MARK##
-# GET /user/{email}
-return users.getMe(token).then(function(obj) {
-    if (obj.email != parameters.email) {
-        return respond(parameters.email, 403);
-    } else {
-        return users.getUserAllStorage(obj.id, token);
-    }
-});
-##MARK##
-# POST /user/{email}/shared/
-var sn = body.serialnumber;
-return users.getMe(token).then(function(me) {
-    return users.checkUserRole(me.id, 'full', sn)
-}).then(function(what) {
-    return users.getUserByEmail(parameters.email)
-}).then(function(user) {
-    return users.assignUserParam(user.id, 'readonly', sn);
-});
-##MARK##
-# DELETE /user/{email}/shared/{sn}
-var sn = parameters.sn;
-return users.getMe(token).then(function(me) {
-    return users.checkUserRole(me.id, 'full', sn)
-}).then(function(what) {
-    return users.getUserByEmail(parameters.email)
-}).then(function(user) {
-    users.deassignUser(user.id, 'readonly');
-    return users.deassignUserParam(user.id, 'readonly', sn);
-});
-##MARK##
-# GET /user/{email}/shared/
-return users.getMe(token).then(function(me) {
+--#ENDPOINT GET /user/{email}/lightbulbs
+local dataports = {"state", "temperature", "hours"};
+local user = currentUser(request)
+if user ~= nil then
+  local list = {}
+  local obj = {}
+  local roles = User.listUserRoles({id = user.id})
+  for i, role in ipairs(roles) do
+    if role.parameters ~= nil and role.parameters.sn ~= nil then
+      local obj = {sn = role.parameters.sn, type = role.role_id}
+      for j, port in ipairs(dataports) do
+        obj[port] = read(role.parameters.sn, port)
+      end
+      table.append(list, obj)
+    end
+  end
+  return list
+else
+  response = error(403)
+end
+--#ENDPOINT GET /user/{email}
+local user = currentUser(request)
+if user ~= nil and user.email == request.parameters.email then
+  return User.listUserData({id = user.id})
+else
+  response = error(403)
+end
+--#ENDPOINT POST /user/{email}/shared/
+local sn = request.body.serialnumber
+local user = currentUser(request)
+if user ~= nil then
+  local isowner = User.checkUserRole({id = user.id, role_id = "full", parameters = {
+    name = "full",
+    value = sn
+  }})
+  if isowner then
+    local guest = User.findUserByEmail({email = request.parameters.email})
+    if guest ~= nil and guest.id ~= nil then
+      User.assignUserParam({id = guest.id, role_id = "readonly", parameters = {{name = "sn", value = sn}}})
+    end
+  end
+end
+response = error(403)
+--#ENDPOINT DELETE /user/{email}/shared/{sn}
+local sn = request.body.serialnumber
+local user = currentUser(request)
+if user ~= nil then
+  local isowner = User.checkUserRole({id = user.id, role_id = "full", parameters = {
+    name = "full",
+    value = sn
+  }})
+  if isowner then
+    local guest = User.findUserByEmail({email = request.parameters.email})
+    if guest ~= nil and guest.id ~= nil then
+      User.deassignUserParam({id = guest.id, role_id = "readonly", parameters = {{name = "sn", value = sn}}})
+    end
+  end
+end
+response = error(403)
+--#ENDPOINT GET /user/{email}/shared/
+--[[return users.getMe(token).then(function(me) {
     if (me.email != parameters.email) {
         return respond('Permission denied', 403);
     } else {
@@ -205,22 +193,13 @@ return users.getMe(token).then(function(me) {
         }
     }
     return results;
-});
-##MARK##
-# POST /lightbulb/{sn}
-//users.checkUserRole(me, 'full', sn,
-return devices('$PRODUCT_ID').write(parameters.sn, body.alias, body.value);
-##MARK##
-# GET /lightbulb/{sn}
-var readval = function(sn, name) {
-    return devices('$PRODUCT_ID').read(sn, name).then(function(data) {
-        return data.value;
-    }).catch(function() {
-        return null;
-    });
+});]]
+--#ENDPOINT POST /lightbulb/{sn}
+response.message = write(request.parameters.sn, request.body.alias, request.body.value);
+--#ENDPOINT GET /lightbulb/{sn}
+local sn = request.parameters.sn
+return {
+  state = read(sn, "state"),
+  hours = read(sn, "hours"),
+  temperature = read(sn, "temp")
 }
-return promise.props({
-    state: readval(parameters.sn, 'state'),
-    hours: readval(parameters.sn, 'hours'),
-    temperature: readval(parameters.sn, 'temp'),
-});

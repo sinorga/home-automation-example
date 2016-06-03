@@ -4,5 +4,16 @@
   "custom_api": "sample_api.lua",
   "product_spec": {
     "lightbulb": "lightbulb.yaml"
+  },
+  "modules": {
+    "auth": "modules/util.lua"
+  },
+  "event_handler": {
+    "device": {
+      "datapoint": "event_handler/product.lua"
+    },
+    "timer": {
+      "request": "event_handler/timer.lua"
+    }
   }
 }
