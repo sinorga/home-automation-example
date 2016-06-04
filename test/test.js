@@ -18,12 +18,15 @@ describe('User', function () {
   var passw = 'secr*etpassw0rd';
 
   before(function (done) {
-    api.put('/user/' + user)
-    .set('Accept', 'application/json')
-    .set('Accept-Encoding', '')
-    .send({password: passw})
-    .expect('Content-Type', /json/)
-    .end(done);
+    api.get('/debug/clean')
+    .end(function () {
+      api.put('/user/' + user)
+      .set('Accept', 'application/json')
+//      .set('Accept-Encoding', '')
+      .send({password: passw})
+  //    .expect('Content-Type', /json/)
+      .end(done);
+    });
   });
 
   it('create duplicate user', function (done) {
@@ -31,7 +34,7 @@ describe('User', function () {
     .send({password: passw})
     .set('Accept', 'application/json')
     .expect('Content-Type', /json/)
-    .expect(200, function(res) {
+    .expect(200, function (res) {
       console.log('hi' + res.text);
       done();
     });

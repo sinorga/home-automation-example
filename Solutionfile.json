@@ -6,7 +6,8 @@
     "lightbulb": "lightbulb.yaml"
   },
   "modules": {
-    "auth": "modules/util.lua"
+    "auth": "modules/util.lua",
+    "debug": "modules/debug.lua"
   },
   "event_handler": {
     "device": {

@@ -18,15 +18,12 @@ else
     subject = ("Signup on " .. domain),
     text = text
   })
-  return 'Ok'
 end
 --#ENDPOINT GET /verify/{code}
 local ret = User.activateUser({code = request.parameters.code})
 if ret ~= nil and ret.status_code ~= nil then
   response.code = ret.status_code
   response.message = ret.message
-else
-  return 'Ok'
 end
 --#ENDPOINT PATCH /user/{email}
 local user = currentUser(request)
@@ -196,8 +193,15 @@ http_error(403, response)
 response.message = write(request.parameters.sn, request.body.alias, request.body.value);
 --#ENDPOINT GET /lightbulb/{sn}
 local sn = request.parameters.sn
-return {
-  state = read(sn, "state"),
-  hours = read(sn, "hours"),
-  temperature = read(sn, "temp")
-}
+if sn ~= nil then
+  return {
+    state = read(sn, "state"),
+    hours = read(sn, "hours"),
+    temperature = read(sn, "temp")
+  }
+end
+http_error(404, response)
+--#ENDPOINT GET /debug/{cmd}
+response.message = debug(request.parameters.cmd)
+--#ENDPOINT WEBSOCKET /debug
+response.message = debug(websocket_info.message)
