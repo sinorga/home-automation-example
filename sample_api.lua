@@ -13,7 +13,7 @@ else
   text = text .. "Click this link to verify your account:\n"
   text = text .. domain .. "verify/" .. ret;
   Email.send({
-    from = 'mail@exosite.com',
+    from = 'Sample App <mail@exosite.com>',
     to = request.parameters.email,
     subject = ("Signup on " .. domain),
     text = text
