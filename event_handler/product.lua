@@ -1,3 +1,3 @@
-response.message = Timeseries.write({
-  query = datapoint.alias .. ",sn=" .. datapoint.device_sn .. " value=0.1"
+Timeseries.write({
+  query = data.alias .. ",sn=" .. data.device_sn .. " value=" .. data.value[2]
 })
