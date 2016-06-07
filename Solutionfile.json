@@ -14,7 +14,7 @@
       "datapoint": "event_handler/product.lua"
     },
     "timer": {
-      "request": "event_handler/timer.lua"
+      "timer": "event_handler/timer.lua"
     }
   }
 }
