@@ -7,10 +7,21 @@ function currentUser(request)
   return nil
 end
 
-function read(sn, alias)
+function kv_read(sn)
+  local resp = Keystore.get({key = "sn_" .. sn})
+  local value = {
+    temp = "undefined",
+    hours = "undefined",
+    state = "undefined"
+  }
+  if type(resp) == "table" and type(resp.value) == "string" then
+    value = from_json(resp.value)
+  end
+  return value
 end
 
-function write(sn, alias, value)
+function kv_write(sn, values)
+  Keystore.set({key = "sn_" .. sn, value = to_json(values)})
 end
 
 http_error_codes = {
