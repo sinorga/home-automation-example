@@ -3,5 +3,7 @@ Timeseries.write({
 })
 local value = kv_read(data.device_sn)
 value[data.alias] = data.value[2]
-value["timestamp"] = data.timestamp
+value["timestamp"] = data.timestamp/1000
+value["pid"] = data.vendor or data.pid
+value["ip"] = data.source_ip
 kv_write(data.device_sn, value)

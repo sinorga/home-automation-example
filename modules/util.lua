@@ -30,6 +30,40 @@ function kv_write(sn, values)
   Keystore.set({key = "sn_" .. sn, value = to_json(values)})
 end
 
+function deviceRpcCall(sn, procedure, args)
+  local device = kv_read(sn)
+  if device.pid == nil then
+    return "device needs to send data first"
+  end
+  local ret = Device.rpcCall({pid = device.pid, calls = {{
+    id = "1",
+    procedure = "lookup",
+    arguments = {"alias", tostring(sn)}
+  }}})
+  if type(ret) ~= "table" then
+    return "error in lookup rpc call"
+  end
+  if ret[1].status ~= "ok" then
+    return "error in lookup: "..ret[1].result
+  end
+
+  local rid = ret[1].result
+
+  local ret2 = Device.rpcCall({pid = device.pid, auth = {client_id = rid}, calls = {{
+    id = "1",
+    procedure = procedure,
+    arguments = args
+  }}})
+  return ret2[1]
+end
+
+function write(sn, alias, value)
+  return deviceRpcCall(sn, "write", {
+    {alias = alias},
+    value
+  })
+end
+
 http_error_codes = {
   [403] = {
     code = 403,

@@ -236,7 +236,12 @@ http_error(403, response)
     return results;
 });]]
 --#ENDPOINT POST /lightbulb/{sn}
-response.message = write(request.parameters.sn, request.body.alias, request.body.value);
+local sn = tostring(request.parameters.sn)
+for _, alias in ipairs({"state", "hours", "temperature"}) do
+  if request.body[alias] ~= nil then
+    response.message = write(sn, alias, request.body[alias])
+  end
+end
 --#ENDPOINT GET /lightbulb/{sn}
 local sn = tostring(request.parameters.sn)
 if sn ~= nil then
