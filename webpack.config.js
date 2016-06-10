@@ -17,11 +17,11 @@ module.exports = {
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.optimize.UglifyJsPlugin(),
     new webpack.DefinePlugin({
-      API_BASE_URL: JSON.stringify(process.env.API_BASE_URL) //process.env.API_BASE_URL)
+      API_BASE_URL: JSON.stringify('')
     })
   ] : [
     new webpack.DefinePlugin({
-      API_BASE_URL: JSON.stringify(process.env.API_BASE_URL) //process.env.API_BASE_URL)
+      API_BASE_URL: JSON.stringify(process.env.API_BASE_URL || '')
     })
   ],
 
