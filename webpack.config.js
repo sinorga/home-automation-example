@@ -16,12 +16,12 @@ function buildPluginList() {
   if(process.env.NODE_ENV === 'production') {
     console.log('building production plugin list');
     plugins.concat([
-      new webpack.optimize.DedupePlugin(),
-      new webpack.optimize.OccurrenceOrderPlugin(),
-      new webpack.optimize.UglifyJsPlugin(),
       new webpack.DefinePlugin({
         API_BASE_URL: JSON.stringify('')
-      })
+      }),
+      new webpack.optimize.DedupePlugin(),
+      new webpack.optimize.OccurrenceOrderPlugin(),
+      new webpack.optimize.UglifyJsPlugin()
     ]);
   }
   else {
@@ -44,7 +44,7 @@ module.exports = {
   output: {
     path: outputPath,
     filename: 'bundle.js',
-    publicPath: outputPath + '/'
+    publicPath: '/'
   },
 
   plugins: buildPluginList(),
