@@ -3,6 +3,9 @@ var request = require('sync-request');
 
 function api (method) {
   return function (path, options) {
+    options = options || {};
+    options.headers = options.headers || {};
+    options.headers['Connection'] = 'keep-alive';
     return request(method, 'http://letz1.apps.exosite-dev.io' + path, options);
   };
 }
@@ -40,15 +43,15 @@ Response:
   body - a string if in the browser or a buffer if on the server
 */
 
-before(function (done) {
-  get('/debug/clean');
-  done();
-});
 var user = 'dominicletz+15@exosite.com';
-// var newuser = 'dominicletz+' + makeid() + '@exosite.com';
 var passw = 'secr*etpassw0rd';
 
 describe('User', function () {
+  before(function (done) {
+    get('/debug/clean');
+    done();
+  });
+
   bit('create new user', function () {
     var res = put('/user/' + user, {
       json: {password: passw}
@@ -84,12 +87,48 @@ describe('User', function () {
 });
 
 describe('Provisioning', function () {
+  var token;
+  before('login to get token', function () {
+    var res = post('/session', {
+      json: {email: user, password: passw}
+    });
+    assert.equal(res.statusCode, 200);
+    token = JSON.parse(res.body).token;
+  });
+  before('remove claimed dvice', function () {
+    post('/user/' + user + '/lightbulbs', {
+      json: {serialnumber: 1, link: false},
+      headers: {'Cookie': 'sid=' + token}
+    });
+  });
+
   bit('claim a device', function () {
     var res = post('/user/' + user + '/lightbulbs', {
-      json: {serialnumber: 1, link: true}
+      json: {serialnumber: 1, link: true},
+      headers: {'Cookie': 'sid=' + token}
     });
 
-    console.log(res.body);
+    console.log(res.body.toString());
     assert.equal(res.statusCode, 200);
   });
+  bit('claim a device twice', function () {
+    var res = post('/user/' + user + '/lightbulbs', {
+      json: {serialnumber: 1, link: true},
+      headers: {'Cookie': 'sid=' + token}
+    });
+
+    assert.equal(res.statusCode, 409);
+  });
+
+  bit('read device status', function () {
+    var res = get('/user/' + user + '/lightbulbs', {
+      headers: {'Cookie': 'sid=' + token}
+    });
+
+    console.log(res.body.toString());
+    assert.equal(res.statusCode, 200);
+  });
+
+
+
 });

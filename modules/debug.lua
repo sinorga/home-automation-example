@@ -14,20 +14,27 @@ function debug(cmd)
     return User.listUsers()
   end
 
-  local _, _, module, fun, args = string.find(cmd, "([%a]+) ([%a]+) (.*)")
+  local _, _, module, fun, args = string.find(cmd, "([%a]+)%.([%a]+)%((.*)%)")
 
   if module == nil then
-    _, _, module, fun, args = string.find(cmd, "([%a]+) ([%a]+)")
+    _, _, fun, args = string.find(cmd, "([%a_]+)%((.*)%)")
   end
 
-  if module ~= nil and fun ~= nil then
-    if args == nil then
+  if fun ~= nil then
+    if args == nil or args == "" then
       args = {}
     else
       args = from_json(args)
     end
 
-    return _G[module][fun](args)
+    if module == nil then
+      return _G[fun](args)
+    else
+      return _G[module][fun](args)
+    end
   end
-  return "Unknown command"
+  return [[Unknown command. Try:
+  User.listUsers()
+  kv_read(1)
+  ]]
 end
