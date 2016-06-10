@@ -17,11 +17,13 @@ export default React.createClass({
       <Provider store={AppStore}>
         <div>
           <Appbar>
-            <div id='app-title'><Link to='/'>Sphinx Example</Link></div>
+            <div id="app-title"><Link to='/'><img className="logo" src="images/exosite-ha-logo.png" /></Link></div>
             {logout_if_logged_in}
           </Appbar>
           <Container>
+            <div className="mui--text-center">
             {this.props.children}
+            </div>
           </Container>
         </div>
       </Provider>

@@ -1,10 +1,37 @@
+.mui-appbar {
+  background-color: #222737;
+}
+
+#sidedrawer {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 200px;
+  left: -200px;
+  overflow: auto;
+  z-index: 2;
+  background-color: #fff;
+  transition: transform 0.2s;
+}
+
+
+.logo {
+  padding-top: 10px;
+  padding-left: 10px;
+  width: 200px;
+}
+
 #app-title {
+  display: inline
+}
+
+/*#app-title {
   padding-left: 20px;
   font-size: 24px;
   line-height: 64px;
   display: inline;
   color: white;
-}
+}*/
 
 #app-title a {
   color: white;
@@ -134,3 +161,4 @@ textarea {
   transform: rotate(-135deg);
   background: #bbb;
 }
+

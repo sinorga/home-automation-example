@@ -23,7 +23,12 @@ end
 local ret = User.activateUser({code = request.parameters.code})
 if ret ~= nil and ret.status_code ~= nil then
   response.code = ret.status_code
-  response.message = ret.message
+  if response.code == 200 then 
+    response.message = 'Signed up successfully.'
+  else
+    response.message = 'Sign up failed. Error: ' .. ret.message
+  end
+  return response.message
 end
 --#ENDPOINT PATCH /user/{email}
 local user = currentUser(request)

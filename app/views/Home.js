@@ -1,6 +1,7 @@
 import React from 'react'
 import { browserHistory } from 'react-router'
 import Button from 'muicss/lib/react/button'
+import Appbar from 'muicss/lib/react/appbar'
 
 export default React.createClass({
   contextTypes: {
@@ -15,7 +16,7 @@ export default React.createClass({
     if (this.isLoggedIn()) {
       return (
         <div>
-          <h2>Sphinx Example</h2>
+          <h2>My Home</h2>
           <Button
             color='primary'
             onClick={() => { browserHistory.push('/lightbulbs') }}>
@@ -31,7 +32,8 @@ export default React.createClass({
     } else {
       return (
         <div>
-          <h2>Sphinx Example</h2>
+          <h1>Brilliant Beacon</h1>
+          <h4>Smart home lighting solution</h4>
           <Button
             color='primary'
             onClick={() => { browserHistory.push('/login') }}>
@@ -40,7 +42,7 @@ export default React.createClass({
           <Button
             color='primary'
             onClick={() => { browserHistory.push('/signup') }}>
-            Signup
+            Create Account
           </Button>
         </div>
       )
