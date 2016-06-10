@@ -1,5 +1,5 @@
 
-$mui-input-placeholder-color: #b4b4b4;
+$mui-input-placeholder-color: #666666;
 $mui-label-font-color: $mui-input-placeholder-color;
 $mui-input-border-color-focus: $mui-input-placeholder-color;
 $mui-label-font-color:$mui-input-placeholder-color;
@@ -8,10 +8,8 @@ $exosite-secondary-color:#2C9DB6;
 
 @import "node_modules/muicss/lib/sass/mui";
 
-
-body {
-  background-color: $exosite-primary-color;
-  color: #ffffff;
+.main_container {
+  background-color: #FFFFFF;
 }
 
 .mui-appbar {
@@ -31,12 +29,12 @@ body {
 
 .mui-textfield--float-label {
   input {
-    color:#E5E5E5;
-    border-bottom-color: #E5E5E5;
+    color:$mui-input-placeholder-color;
+    border-bottom-color: $mui-input-placeholder-color;
   }
 
   label {
-    color: #E5E5E5;
+    color: $mui-input-placeholder-color;
   }
 }
 
@@ -44,99 +42,13 @@ body {
   input, textarea {
     display: block;
 
-    border-bottom-color: #E5E5E5;
+    border-bottom-color: $mui-input-placeholder-color;
 
     &:focus ~ label {
-      color: #E5E5E5;
+      color: $mui-input-placeholder-color;
     }
   }
 }
-
-
-//.mui-textfield {
-//  display: block;
-//  padding-top: $xFormLabelLineHeight;
-//  margin-bottom: $mui-form-group-margin-bottom;
-//  position: relative;
-//
-//  > label {
-//    // Positioning
-//    position: absolute;
-//    top: 0;
-//
-//    // Display
-//    display: block;
-//    width: 100%;
-//
-//    // Other
-//    color: $mui-label-font-color;
-//    font-size: $mui-label-font-size;
-//    font-weight: 400;
-//    line-height: $xFormLabelLineHeight;
-//    overflow-x: hidden;
-//    text-overflow: ellipsis;
-//    white-space: nowrap;
-//  }
-//
-//  > textarea {
-//    padding-top: 5px;
-//  }
-//
-//  > input,
-//  > textarea {
-//    display: block;
-//
-//    &:focus ~ label {
-//      color: $mui-input-border-color-focus;
-//    }
-//  }
-//}
-//
-//.mui-textfield--float-label {
-//  > label {
-//    // Layout
-//    position: absolute;
-//    //transform: translate(0px, $xFormLabelLineHeight);
-//
-//    // Typography
-//    font-size: $mui-input-font-size;
-//    line-height: $mui-input-height;
-//    color: $mui-input-placeholder-color;
-//
-//    // Overflow policy
-//    text-overflow: clip;
-//
-//    // Cursor
-//    cursor: text;  // for ie10
-//    pointer-events: none;
-//  }
-//
-//  > input,
-//  > textarea {
-//    &:focus ~ label {
-//      transform: translate(0px, 0px);
-//      font-size: $mui-label-font-size;
-//      line-height: $xFormLabelLineHeight;
-//      text-overflow: ellipsis;
-//    }
-//
-//    &:not(:focus) {
-//      &.mui--is-not-empty,
-//      &[value]:not([value=""]):not(.mui--is-empty):not(.mui--is-not-empty),
-//      &:not(:empty):not(.mui--is-empty):not(.mui--is-not-empty) {
-//        ~ label {
-//          color: $mui-label-font-color;
-//          font-size: $mui-label-font-size;
-//          line-height: $xFormLabelLineHeight;
-//          transform: translate(0px, 0px);
-//          text-overflow: ellipsis;
-//        }
-//      }
-//    }
-//  }
-//}
-
-
 
 #app-title {
   padding-left: 20px;

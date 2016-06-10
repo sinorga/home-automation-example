@@ -1,32 +1,59 @@
 var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var CleanWebpackPlugin = require('clean-webpack-plugin');
 
 // puts .env into actual env
 require('dotenv').config({silent: true});
+
+var outputPath = 'builds';
+
+function buildPluginList() {
+  var plugins = [
+    //new CleanWebpackPlugin(outputPath),
+    //new ExtractTextPlugin('style.css')
+  ];
+
+  if(process.env.NODE_ENV === 'production') {
+    console.log('building production plugin list');
+    plugins.concat([
+      new webpack.optimize.DedupePlugin(),
+      new webpack.optimize.OccurrenceOrderPlugin(),
+      new webpack.optimize.UglifyJsPlugin(),
+      new webpack.DefinePlugin({
+        API_BASE_URL: JSON.stringify('')
+      })
+    ]);
+  }
+  else {
+    console.log('building non-production plugin list');
+    var apiBaseUrl = JSON.stringify(process.env.API_BASE_URL || '');
+    console.log('apiBaseUrl: ', apiBaseUrl);
+    plugins.push(new webpack.DefinePlugin({
+      API_BASE_URL: apiBaseUrl })
+    );
+  }
+
+  plugins.push(new ExtractTextPlugin('style.css'));
+
+  return plugins;
+}
 
 module.exports = {
   entry: './app/index.js',
 
   output: {
-    path: 'public',
+    path: outputPath,
     filename: 'bundle.js',
-    publicPath: ''
+    publicPath: outputPath + '/'
   },
 
-  plugins: process.env.NODE_ENV === 'production' ? [
-    new webpack.optimize.DedupePlugin(),
-    new webpack.optimize.OccurrenceOrderPlugin(),
-    new webpack.optimize.UglifyJsPlugin(),
-    new webpack.DefinePlugin({
-      API_BASE_URL: JSON.stringify('')
-    })
-  ] : [
-    new webpack.DefinePlugin({
-      API_BASE_URL: JSON.stringify(process.env.API_BASE_URL || '')
-    })
-  ],
+  plugins: buildPluginList(),
 
   devtool: 'cheap-module-source-map',
+
+  devServer: {
+    hot: true
+  },
 
   module: {
     loaders: [
@@ -43,15 +70,14 @@ module.exports = {
         ]
       },
       {
-        test: /\.scss$/,
-        loader: ExtractTextPlugin.extract('css!sass')
+        test:   /\.scss/,
+        loader: ExtractTextPlugin.extract('style', 'css!sass'),
+      },
+      {
+        test:   /\.html/,
+        loader: 'html'
       }
     ]
-  },
-  plugins: [
-    new ExtractTextPlugin('style.css', {
-      allChunks: true
-    })
-  ]
-}
+  }
+};
 
