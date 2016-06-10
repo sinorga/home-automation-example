@@ -119,4 +119,16 @@ describe('Provisioning', function () {
 
     assert.equal(res.statusCode, 409);
   });
+
+  bit('read device status', function () {
+    var res = get('/user/' + user + '/lightbulbs', {
+      headers: {'Cookie': 'sid=' + token}
+    });
+
+    console.log(res.body.toString());
+    assert.equal(res.statusCode, 200);
+  });
+
+
+
 });

@@ -131,13 +131,18 @@ if user ~= nil then
   local list = {}
   local obj = {}
   local roles = User.listUserRoles({id = user.id})
-  for i, role in ipairs(roles) do
-    if role.parameters ~= nil and role.parameters.sn ~= nil then
-      local obj = {sn = role.parameters.sn, type = role.role_id}
-      for j, port in ipairs(dataports) do
-        obj[port] = read(role.parameters.sn, port)
+  for _, role in ipairs(roles) do
+    for _, parameter in ipairs(role.parameters) do
+      if parameter.name == "sn" then
+        local device_info = kv_read(parameter.value)
+        if role.role_id == "owner" then
+          device_info.type = "full"
+        else
+          device_info.type = "readonly"
+        end
+        device_info.serialnumber = parameter.value
+        table.insert(list, device_info)
       end
-      table.append(list, obj)
     end
   end
   return list
