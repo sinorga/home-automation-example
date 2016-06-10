@@ -157,17 +157,32 @@ else
   http_error(403, response)
 end
 --#ENDPOINT POST /user/{email}/shared/
-local sn = request.body.serialnumber
+local sn = tostring(request.body.serialnumber)
 local user = currentUser(request)
 if user ~= nil then
-  local isowner = User.checkUserRole({id = user.id, role_id = "owner", parameters = {
-    name = "owner",
-    value = sn
-  }})
+  local isowner = User.hasUserRoleParam({
+    id = user.id,
+    role_id = "owner",
+    parameter_name = "sn",
+    parameter_value = sn
+  })
+  response.message = isowner
   if isowner then
-    local guest = User.findUserByEmail({email = request.parameters.email})
-    if guest ~= nil and guest.id ~= nil then
-      User.assignUserParam({id = guest.id, role_id = "guest", parameters = {{name = "sn", value = sn}}})
+    local guest = User.listUsers({filter = "email::like::" .. request.parameters.email})
+    if #guest == 1 and guest[1].id ~= nil then
+      local resp = User.assignUser({
+        id = guest[1].id,
+        roles = {{
+          role_id = "guest",
+          parameters = {{
+            name = "sn",
+            value = sn
+          }}
+        }}
+      });
+      return {"ok", resp}
+    else
+      return {"error", "user not found"}
     end
   end
 end
@@ -223,16 +238,15 @@ http_error(403, response)
 --#ENDPOINT POST /lightbulb/{sn}
 response.message = write(request.parameters.sn, request.body.alias, request.body.value);
 --#ENDPOINT GET /lightbulb/{sn}
-local sn = request.parameters.sn
+local sn = tostring(request.parameters.sn)
 if sn ~= nil then
-  return {
-    state = read(sn, "state"),
-    hours = read(sn, "hours"),
-    temperature = read(sn, "temp")
-  }
+  return kv_read(sn)
 end
 http_error(404, response)
 --#ENDPOINT GET /debug/{cmd}
 response.message = debug(request.parameters.cmd)
 --#ENDPOINT WEBSOCKET /debug
 response.message = debug(websocket_info.message)
+--#ENDPOINT GET /_init
+User.createRole({role_id = "owner", parameter = {{name = "sn"}}})
+User.createRole({role_id = "guest", parameter = {{name = "sn"}}})

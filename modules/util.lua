@@ -16,7 +16,7 @@ end
 function kv_read(sn)
   local resp = Keystore.get({key = "sn_" .. sn})
   local value = {
-    temp = "undefined",
+    temperature = "undefined",
     hours = "undefined",
     state = "undefined"
   }
