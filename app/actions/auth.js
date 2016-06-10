@@ -6,15 +6,9 @@ export function attemptSignup (email, password) {
     })
 
     function signupAttemptResponseHandler () {
-      if (this.status === 200) {
-        try {
-          let resp = JSON.parse(this.responseText)
-
-          // HACK
-          reportSignupSuccess({loginhack: true})(dispatch)
-        } catch (e) {
-          reportSignupError(this.responseText)(dispatch)
-        }
+      if (this.status === 200 && this.responseText === 'Ok') {
+        // HACK
+        reportSignupSuccess({loginhack: true})(dispatch)
       } else if (this.status === 401) {
         reportSignupError('Invalid Credentials')(dispatch)
       } else if (this.status === 0) {
