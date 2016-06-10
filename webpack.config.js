@@ -5,7 +5,7 @@ var CleanWebpackPlugin = require('clean-webpack-plugin');
 // puts .env into actual env
 require('dotenv').config({silent: true});
 
-var outputPath = 'builds';
+var outputPath = 'public/builds';
 
 function buildPluginList() {
   var plugins = [
