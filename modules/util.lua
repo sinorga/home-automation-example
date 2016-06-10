@@ -1,5 +1,11 @@
 function currentUser(request)
+  if type(request.headers.cookie) ~= "string" then
+    return nil
+  end
   local _, _, sid = string.find(request.headers.cookie, "sid=([^;]+)")
+  if type(sid) ~= "string" then
+    return nil
+  end
   local user = User.getCurrentUser({token = sid})
   if user ~= nil and user.id ~= nil then
     return user

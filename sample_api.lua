@@ -54,8 +54,7 @@ end
 response.code = 400
 response.message = "Session invalid"
 --#ENDPOINT POST /user/{email}/lightbulbs
---
-local sn = request.body.serialnumber;
+local sn = tostring(request.body.serialnumber);
 local link = request.body.link;
 local user = currentUser(request)
 
@@ -64,21 +63,31 @@ if user == nil or user.id == nil then
   return
 end
 
-local owners = User.listRoleUsers({role_id = "full", parameter = sn})
+local owners = User.listRoleParamUsers({
+  role_id = "owner",
+  parameter_name = "sn",
+  parameter_value = sn
+})
 
-if link ~= nil then
+if link == true then
   if #owners == 0 then
     local resp = User.assignUser({
       id = user.id,
-      roles = {{role_id = "full", parameter = sn}}
+      roles = {{
+        role_id = "owner",
+        parameters = {{
+          name = "sn",
+          value = sn
+        }}
+      }}
     })
-    return {"assignUser", resp}
+    return {"ok", resp}
   else
     response.message = "Conflict"
     response.code = 409
     return
   end
-else
+elseif link == false then
   local is_owner = false
   for i, owner_id in ipairs(owners) do
     if owner_id == user.id then
@@ -91,12 +100,29 @@ else
     response.code = 409
     return
   else
-    local guests = User.listRoleUsers({role_id = "readonly", parameter = sn})
+    local guests = User.listRoleParamUsers({
+      role_id = "guest",
+      parameter_name = "sn",
+      parameter_value = sn
+    })
     for i, guest in ipairs(guests) do
-      User.deassignUserParam({id = guest, role_id = "readonly", parameter = sn})
+      User.deassignUserParam({
+        id = guest,
+        role_id = "guest",
+        parameter_name = "sn",
+        parameter_value = sn
+      })
     end
-    User.deassignUserParam({id = user.id, role_id = "full", parameter = sn})
+    User.deassignUserParam({
+      id = user.id,
+      role_id = "owner",
+      parameter_name = "sn",
+      parameter_value = sn
+    })
   end
+else
+  response.message = "Conflict"
+  response.code = 409
 end
 --#ENDPOINT GET /user/{email}/lightbulbs
 local dataports = {"state", "temperature", "hours"};
@@ -129,14 +155,14 @@ end
 local sn = request.body.serialnumber
 local user = currentUser(request)
 if user ~= nil then
-  local isowner = User.checkUserRole({id = user.id, role_id = "full", parameters = {
-    name = "full",
+  local isowner = User.checkUserRole({id = user.id, role_id = "owner", parameters = {
+    name = "owner",
     value = sn
   }})
   if isowner then
     local guest = User.findUserByEmail({email = request.parameters.email})
     if guest ~= nil and guest.id ~= nil then
-      User.assignUserParam({id = guest.id, role_id = "readonly", parameters = {{name = "sn", value = sn}}})
+      User.assignUserParam({id = guest.id, role_id = "guest", parameters = {{name = "sn", value = sn}}})
     end
   end
 end
@@ -145,14 +171,14 @@ http_error(403, response)
 local sn = request.body.serialnumber
 local user = currentUser(request)
 if user ~= nil then
-  local isowner = User.checkUserRole({id = user.id, role_id = "full", parameters = {
-    name = "full",
+  local isowner = User.checkUserRole({id = user.id, role_id = "owner", parameters = {
+    name = "owner",
     value = sn
   }})
   if isowner then
     local guest = User.findUserByEmail({email = request.parameters.email})
     if guest ~= nil and guest.id ~= nil then
-      User.deassignUserParam({id = guest.id, role_id = "readonly", parameters = {{name = "sn", value = sn}}})
+      User.deassignUserParam({id = guest.id, role_id = "guest", parameters = {{name = "sn", value = sn}}})
     end
   end
 end
@@ -165,11 +191,11 @@ http_error(403, response)
         return users.getAssignedRoles(me.id);
     }
 }).filter(function(role) {
-    return role.parameter && role.role_id == 'full';
+    return role.parameter && role.role_id == 'owner';
 }).map(function(role) {
     return promise.props({
         'serialnumber': role.parameter,
-        'email': users.getAssignedUsers('readonly', role.parameter).map(function(id) {
+        'email': users.getAssignedUsers('guest', role.parameter).map(function(id) {
             return users.getUser(id)
         }).map(function(user) {
             return user.email;
@@ -182,7 +208,7 @@ http_error(403, response)
         for (var j = 0; j < device.email.length; j++) {
             results.push({
                 'serialnumber': device.serialnumber,
-                'type': 'readonly',
+                'type': 'guest',
                 'email': device.email[j]
             });
         }
