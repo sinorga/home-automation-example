@@ -34,6 +34,7 @@
     "json-loader": "^0.5.4",
     "jsonep": "0",
     "lua.vm.js": "0.0.1",
+    "material-design-icons": "^2.2.3",
     "moment-timezone": "^0.5.1",
     "muicss": "^0.4.7",
     "path": "^0.12.7",
@@ -47,8 +48,13 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
+    "css-loader": "^0.23.1",
+    "extract-text-webpack-plugin": "^1.0.1",
     "http-server": "^0.8.5",
     "mocha": "^2.5.3",
+    "node-sass": "^3.7.0",
+    "sass-loader": "^3.2.0",
+    "style-loader": "^0.13.1",
     "sync-request": "^3.0.1",
     "webpack-dev-server": "^1.14.1"
   }

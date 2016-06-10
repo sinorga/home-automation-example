@@ -5,7 +5,9 @@ function getInitialState () {
   if (session_text !== null) {
     try {
       session = JSON.parse(session_text)
-    } catch(e) {}
+    } catch(e) {
+      console.error(e)
+    }
   }
 
   return {

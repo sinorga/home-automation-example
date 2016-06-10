@@ -17,12 +17,12 @@ export default React.createClass({
         <div>
           <h2>Sphinx Example</h2>
           <Button
-            color='primary'
+            color='secondary'
             onClick={() => { browserHistory.push('/lightbulbs') }}>
             My Lightbulbs
           </Button>
           <Button
-            color='primary'
+            color='secondary'
             onClick={() => { browserHistory.push('/account') }}>
             My Account
           </Button>
@@ -33,12 +33,12 @@ export default React.createClass({
         <div>
           <h2>Sphinx Example</h2>
           <Button
-            color='primary'
+            color='secondary'
             onClick={() => { browserHistory.push('/login') }}>
             Login
           </Button>
           <Button
-            color='primary'
+            color='secondary'
             onClick={() => { browserHistory.push('/signup') }}>
             Signup
           </Button>

@@ -1,4 +1,5 @@
-var webpack = require('webpack')
+var webpack = require('webpack');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 // puts .env into actual env
 require('dotenv').config({silent: true});
@@ -17,11 +18,11 @@ module.exports = {
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.optimize.UglifyJsPlugin(),
     new webpack.DefinePlugin({
-      API_BASE_URL: JSON.stringify(process.env.API_BASE_URL) //process.env.API_BASE_URL)
+      API_BASE_URL: '"https://goodsolution.apps.exosite-dev.io"' //process.env.API_BASE_URL)
     })
   ] : [
     new webpack.DefinePlugin({
-      API_BASE_URL: JSON.stringify(process.env.API_BASE_URL) //process.env.API_BASE_URL)
+      API_BASE_URL: '"https://goodsolution.apps.exosite-dev.io"' //JSON.stringify(process.env.API_BASE_URL) //process.env.API_BASE_URL)
     })
   ],
 
@@ -29,8 +30,28 @@ module.exports = {
 
   module: {
     loaders: [
-      { test: /\.jsx?$/, exclude: /node_modules/, loader: 'babel-loader?presets[]=es2015&presets[]=react&plugins[]=transform-object-rest-spread' }
+      {
+        test: /\.jsx?$/,
+        exclude: /node_modules/,
+        loader: 'babel-loader?presets[]=es2015&presets[]=react&plugins[]=transform-object-rest-spread'
+      },
+      {
+        test: /\.(jpe?g|png|gif|svg)$/i,
+        loaders: [
+          'file?hash=sha512&digest=hex&name=[hash].[ext]',
+          'image-webpack?bypassOnDebug&optimizationLevel=7&interlaced=false'
+        ]
+      },
+      {
+        test: /\.scss$/,
+        loader: ExtractTextPlugin.extract('css!sass')
+      }
     ]
-  }
+  },
+  plugins: [
+    new ExtractTextPlugin('style.css', {
+      allChunks: true
+    })
+  ]
 }
 

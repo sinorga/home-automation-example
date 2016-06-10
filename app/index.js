@@ -11,6 +11,8 @@ import Account from './views/Account'
 import Lightbulbs from './views/Lightbulbs'
 import Lightbulb from './views/Lightbulb'
 
+require('./sass/styles.scss');
+
 render((
   <Router history={browserHistory}>
     <Route path='/' component={App}>
