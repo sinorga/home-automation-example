@@ -17,7 +17,7 @@ export default React.createClass({
       <Provider store={AppStore}>
         <div>
           <Appbar>
-            <div id="app-title"><Link to='/'><img className="logo" src="images/exosite-ha-logo.png" /></Link></div>
+            <div id='app-title'><Link to='/'><img className="logo" src="images/example-app-logo.svg" /></Link></div>
             {logout_if_logged_in}
           </Appbar>
           <Container>

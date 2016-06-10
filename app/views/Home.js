@@ -18,12 +18,12 @@ export default React.createClass({
         <div>
           <h2>My Home</h2>
           <Button
-            color='primary'
+            color='secondary'
             onClick={() => { browserHistory.push('/lightbulbs') }}>
             My Lightbulbs
           </Button>
           <Button
-            color='primary'
+            color='secondary'
             onClick={() => { browserHistory.push('/account') }}>
             My Account
           </Button>
@@ -35,12 +35,12 @@ export default React.createClass({
           <h1>Brilliant Beacon</h1>
           <h4>Smart home lighting solution</h4>
           <Button
-            color='primary'
+            color='secondary'
             onClick={() => { browserHistory.push('/login') }}>
             Login
           </Button>
           <Button
-            color='primary'
+            color='secondary'
             onClick={() => { browserHistory.push('/signup') }}>
             Create Account
           </Button>

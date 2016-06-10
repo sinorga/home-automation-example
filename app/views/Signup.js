@@ -77,7 +77,7 @@ export default React.createClass({
         <Form onSubmit={this.handleForm}>
           <Input label='Email Address' floatingLabel/>
           <Input label='Password' type="password" floatingLabel/>
-          <Button color='primary'>Signup</Button> {spinner_when_waiting}
+          <Button color='secondary'>Signup</Button> {spinner_when_waiting}
         </Form>
       </div>
     )

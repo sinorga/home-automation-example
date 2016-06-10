@@ -35,7 +35,7 @@ export default React.createClass({
     return (
       <div>
         <h2>Logout</h2>
-        <Button color='primary' onClick={this.handleLogout}>Logout</Button>
+        <Button color='secondary' onClick={this.handleLogout}>Logout</Button>
       </div>
     )
   }
