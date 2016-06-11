@@ -15,7 +15,7 @@ function buildPluginList() {
 
   if(process.env.NODE_ENV === 'production') {
     console.log('building production plugin list');
-    plugins.concat([
+    plugins = plugins.concat([
       new webpack.DefinePlugin({
         API_BASE_URL: JSON.stringify('')
       }),
@@ -23,8 +23,7 @@ function buildPluginList() {
       new webpack.optimize.OccurrenceOrderPlugin(),
       new webpack.optimize.UglifyJsPlugin()
     ]);
-  }
-  else {
+  } else {
     console.log('building non-production plugin list');
     var apiBaseUrl = JSON.stringify(process.env.API_BASE_URL || '');
     console.log('apiBaseUrl: ', apiBaseUrl);
@@ -44,7 +43,7 @@ module.exports = {
   output: {
     path: outputPath,
     filename: 'bundle.js',
-    publicPath: '/'
+    publicPath: 'builds/'
   },
 
   plugins: buildPluginList(),
