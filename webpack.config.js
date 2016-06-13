@@ -8,27 +8,26 @@ require('dotenv').config({silent: true});
 var outputPath = 'public/builds';
 
 function buildPluginList() {
-  var plugins = [
-    //new CleanWebpackPlugin(outputPath),
-    //new ExtractTextPlugin('style.css')
-  ];
+  var plugins = [];
 
   if(process.env.NODE_ENV === 'production') {
     console.log('building production plugin list');
-    plugins = plugins.concat([
-      new webpack.DefinePlugin({
-        API_BASE_URL: JSON.stringify('')
-      }),
+    plugins.concat([
       new webpack.optimize.DedupePlugin(),
       new webpack.optimize.OccurrenceOrderPlugin(),
-      new webpack.optimize.UglifyJsPlugin()
+      new webpack.optimize.UglifyJsPlugin(),
+      new webpack.DefinePlugin({
+        API_BASE_URL: JSON.stringify('')
+      })
     ]);
-  } else {
+  }
+  else {
     console.log('building non-production plugin list');
     var apiBaseUrl = JSON.stringify(process.env.API_BASE_URL || '');
     console.log('apiBaseUrl: ', apiBaseUrl);
     plugins.push(new webpack.DefinePlugin({
-      API_BASE_URL: apiBaseUrl })
+        API_BASE_URL: apiBaseUrl
+      })
     );
   }
 
@@ -43,7 +42,7 @@ module.exports = {
   output: {
     path: outputPath,
     filename: 'bundle.js',
-    publicPath: 'builds/'
+    publicPath: '/'
   },
 
   plugins: buildPluginList(),

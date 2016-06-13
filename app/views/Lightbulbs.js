@@ -1,8 +1,12 @@
 import React from 'react'
+import ReactDOM from 'react-dom';
+import Row from 'muicss/lib/react/row';
+import Col from 'muicss/lib/react/col';
 import { browserHistory } from 'react-router'
 import Form from 'muicss/lib/react/form'
 import Button from 'muicss/lib/react/button'
 import Input from 'muicss/lib/react/input'
+import mui from 'muicss';
 import Spinner from '../components/spinner'
 import AddLightbulbForm from '../components/add_lightbulb_form'
 import { attemptToggleLightbulbState, attemptAddLightbulb, requestLightbulbs } from '../actions/lightbulbs'
@@ -10,6 +14,26 @@ import { attemptToggleLightbulbState, attemptAddLightbulb, requestLightbulbs } f
 export default React.createClass({
   contextTypes: {
     store: React.PropTypes.object
+  },
+
+  showLightbulbMenu(event) {
+    console.log("in showLightbulbMenu");
+    // initialize modal element
+    //var modalEl = document.createElement('div');
+    //modalEl.style.width = '100px';
+    //modalEl.style.height = 'auto';
+    //modalEl.style.position = 'relative';
+    //modalEl.style.left = event.screenX;
+    //modalEl.style.top = event.screenY;
+    //modalEl.style.backgroundColor = '#fff';
+
+    // show modal
+    mui.overlay('on', modalEl);
+  },
+
+  showAddLightbulbForm() {
+    console.log("in showAddLightbulbForm");
+    mui.overlay('on');
   },
 
   handleAddLightbulb (request) {
@@ -92,37 +116,40 @@ export default React.createClass({
 
     return (
       <div>
-        <h2>Your Lightbulbs {spinner_when_waiting}</h2>
+        <h2>Devices {spinner_when_waiting}</h2>
         {error_message}
         {info_message_when_none}
-        <ul className="detaillist list">
           {state.lightbulbs.statuses.sort((a,b) => a.serialnumber > b.serialnumber).map( (m,i) => {
-            let state_text = (
-              m.isUpdating
-              ? <span>...</span>
-              : <a 
-                  onClick={()=>{
-                    attemptToggleLightbulbState(m.serialnumber)(this.context.store.dispatch, this.context.store.getState)
-                  }}
-                  style={{cursor:"pointer"}}
-                >
-                  {m.state || "???"}
-                </a>
-            )
+            const statusIconClass = "material-icons md-36 status-icon " + m.state;
 
             return (
-              <li className="detaillist row" key={m.serialnumber}><ul className="detaillist itemlist">
-                <li className="detaillist item">{m.serialnumber}</li>
-                <li className="detaillist item">{state_text}</li>
-                <li className="detaillist item"><a onClick={() => {
-                  browserHistory.push('/lightbulbs/'+m.serialnumber)
-                }}>☰</a></li>
-              </ul></li>
+              <Row className="device-list-item">
+                <Col xs="2" md="1" className="status-icon-col"><i className={statusIconClass}>lightbulb_outline</i></Col>
+                <Col xs="8" md="10" className="name-and-serial">
+                  <Row>
+                    <Col xs="12">{m.name}</Col>
+                  </Row>
+                  <Row>
+                    <Col xs="12" className="serialnumber">{m.serialnumber}</Col>
+                  </Row>
+                </Col>
+                <Col xs="2" md="1">
+                  <div onClick={this.showLightbulbMenu} className="item-menu-icon">
+                    <i className="material-icons md-36">more_vert</i>
+                  </div>
+                </Col>
+              </Row>
             )
           })}
-        </ul>
-        <AddLightbulbForm onSubmit={this.handleAddLightbulb} isLoading={state.lightbulbs.isAdding} />
+        <Row>
+          <Col xs="12">
+            <Button onClick={this.showAddLightbulbForm} className="add-device-btn" size="small" color="accent" variant="fab">+</Button>
+          </Col>
+        </Row>
       </div>
+
     )
   }
 })
+
+//<AddLightbulbForm onSubmit={this.handleAddLightbulb} isLoading={state.lightbulbs.isAdding} />
