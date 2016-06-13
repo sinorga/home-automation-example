@@ -55,8 +55,6 @@ function getTestingState () {
 function reducer (state, action) {
   if (state === undefined) { return getTestingState() }
 
-  console.log("action.type: ", action.type);
-
   switch (action.type) {
     case 'ATTEMPT_REQUEST_STATES':
       return {
