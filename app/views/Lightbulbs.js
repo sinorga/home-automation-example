@@ -190,9 +190,9 @@ export default React.createClass({
         <Dialog
           title="Dialog With Actions"
           actions={actions}
-          modal={false}
+          modal={true}
           open={this.lightbulbOpen}
-          onRequestClose={this.handleClose} >
+          onRequestClose={this.closeLightbulbModal} >
           The actions in this window were passed in as an array of React objects.
         </Dialog>
        </div>
