@@ -214,20 +214,20 @@ if user ~= nil then
   if user.email ~= request.body.email then
     http_error(403, response)
   else
-    local roles = User.listUserRoles({"id":user.id})
+    local roles = User.listUserRoles({id = user.id})
     local list = {}
     for _, role in ipairs(roles) do
       if role.role_id == "owner" then
         for _, parameter in ipairs(role.parameters) do
           if parameter.name == "sn" then
-            local guestusers = User.listRoleParamUsers(
+            local guestusers = User.listRoleParamUsers({
               role_id = "guest", parameter_name = "sn", parameter_value = parameter.value
-            )
+            })
             if guestusers then
               for _, userid in ipairs(guestusers) do
                 local info = {}
                 info.serialnumber = parameter.value
-                local user = User.getUser({"id":userid})
+                local user = User.getUser({id = userid})
                 info.email = user.email
                 info.type = "readonly"
                 table.insert(list, info)
