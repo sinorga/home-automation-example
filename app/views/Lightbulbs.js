@@ -24,6 +24,8 @@ import MenuItem from 'material-ui/lib/menus/menu-item';
 import Checkbox from 'material-ui/lib/checkbox';
 import Popover from 'material-ui/lib/popover/popover';
 import RaisedButton from 'material-ui/lib/raised-button';
+import FlatButton from 'material-ui/lib/flat-button';
+import Dialog from 'material-ui/lib/dialog';
 
 export default React.createClass({
 
@@ -31,32 +33,14 @@ export default React.createClass({
     store: React.PropTypes.object
   },
 
-  showLightbulbMenu(event) {
-    console.log("in showLightbulbMenu");
-    // initialize modal element
-    var modalEl = document.createElement('div');
-    //modalEl.style.width = '100px';
-    //modalEl.style.height = 'auto';
-    //modalEl.style.position = 'relative';
-    //modalEl.style.left = event.screenX;
-    //modalEl.style.top = event.screenY;
-    //modalEl.style.backgroundColor = '#fff';
-
-    // show modal
-    mui.overlay('on', modalEl);
+  showLightbulbModal() {
+    console.log("in showLightbulbModal");
+    this.lightbulbOpen = true;
   },
 
-  openMenu() {
-    console.log("in openMenu")
-  },
-
-  showAddLightbulbForm() {
-    console.log("in showAddLightbulbForm");
-    //var modalEl = document.createElement('div');
-    //
-    ////ReactDOM.render(<AddLightbulbForm onSubmit={this.handleAddLightbulb} isLoading={false} />, modalEl);
-    //
-    //mui.overlay('on');
+  closeLightbulbModal() {
+    console.log("in closeLightbulbModal");
+    this.lightbulbOpen = false;
   },
 
   handleAddLightbulb (request) {
@@ -64,6 +48,8 @@ export default React.createClass({
   },
 
   componentWillMount () {
+    this.lightbulbOpen = false;
+
     let state = this.context.store.getState()
 
     // FIXME: This is probably the wrong way to do this.
@@ -139,43 +125,25 @@ export default React.createClass({
 
     const actionButtonStyle = {
       'float': 'right',
-      color: '#FF9300'
+      color: '#FF9300',
+      marginRight: 10,
+      marginTop: 10,
+      marginBottom:30
     };
 
-    var addMoreButton = (
-      <FloatingActionButton
-        onMouseDown={this.showAddLightbulbForm}
-        onTouchTap={this.showAddLightbulbForm}
-        backgroundColor={ExositeTheme.palette.accent1Color}
-        mini={true} >
-        <ContentAdd />
-      </FloatingActionButton> );
-
-    const iconButtonElement = (
-      <IconButton
-        touch={true}
-        disabled={false}
-        >
-        <MoreVertIcon color={Colors.grey400} />
-      </IconButton>
-    );
-
-    const rightIconMenu = (
-      <IconMenu
-        iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
-        anchorOrigin={{horizontal: 'left', vertical: 'top'}}
-        targetOrigin={{horizontal: 'left', vertical: 'top'}}
-        >
-        <MenuItem primaryText="Refresh" />
-        <MenuItem primaryText="Send feedback" />
-        <MenuItem primaryText="Settings" />
-        <MenuItem primaryText="Help" />
-        <MenuItem primaryText="Sign out" />
-      </IconMenu>
-    );
-
-
-
+    const actions = [
+      <FlatButton
+        label="Cancel"
+        secondary={true}
+        onTouchTap={this.closeLightbulbModal}
+        />,
+      <FlatButton
+        label="Submit"
+        primary={true}
+        disabled={true}
+        onTouchTap={this.handleAddLightbulb}
+        />,
+    ];
 
     return (
       <div>
@@ -184,17 +152,49 @@ export default React.createClass({
         {info_message_when_none}
         <List>
         {state.lightbulbs.statuses.sort((a,b) => a.serialnumber > b.serialnumber).map( (m,i) => {
+            const rightIconMenu = (
+              <IconMenu
+                iconButtonElement={<IconButton><MoreVertIcon color={Colors.grey400} /></IconButton>}
+                anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+                targetOrigin={{horizontal: 'right', vertical: 'top'}} >
+                <MenuItem primaryText="Turn on" />
+                <MenuItem primaryText="Add Alert" />
+                <MenuItem primaryText="Share" />
+                <MenuItem primaryText="Edit" />
+                <MenuItem primaryText="Delete" />
+              </IconMenu>
+            );
 
             return (
-                <ListItem key={i}
-                          leftAvatar={<Avatar icon={<LightbulbIcon />} backgroundColor={ m.state === 'on' ? Colors.yellow600 : Colors.grey300} />}
-
-                          primaryText={m.name}/> )
+                <div key={i}>
+                  <ListItem leftAvatar={<Avatar icon={<LightbulbIcon />} backgroundColor={ m.state === 'on' ? Colors.yellow600 : Colors.grey300} />}
+                            rightIconButton={rightIconMenu}
+                            primaryText={m.name}
+                            secondaryText={m.serialnumber}/>
+                    <Divider />
+                </div>
+              )
           })}
-
-          <ListItem rightIconButton={rightIconMenu} />
-          <ListItem rightIconButton={addMoreButton} />
         </List>
+
+        <div>
+          <FloatingActionButton
+            onMouseDown={this.showLightbulbModal}
+            backgroundColor={ExositeTheme.palette.accent1Color}
+            mini={true}
+            style={actionButtonStyle}>
+            <ContentAdd />
+          </FloatingActionButton>
+        </div>
+
+        <Dialog
+          title="Dialog With Actions"
+          actions={actions}
+          modal={false}
+          open={this.lightbulbOpen}
+          onRequestClose={this.handleClose} >
+          The actions in this window were passed in as an array of React objects.
+        </Dialog>
        </div>
     )
   }
