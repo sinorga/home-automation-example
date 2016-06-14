@@ -28,7 +28,7 @@ export default React.createClass({
     //modalEl.style.backgroundColor = '#fff';
 
     // show modal
-    mui.overlay('on', modalEl);
+    //mui.overlay('on', modalEl);
   },
 
   showAddLightbulbForm() {
@@ -143,7 +143,7 @@ export default React.createClass({
           })}
         <Row>
           <Col xs="12">
-            <Button onClick={this.showAddLightbulbForm} className="add-device-btn" size="small" color="accent" variant="fab">+</Button>
+            <AddLightbulbForm onSubmit={this.handleAddLightbulb} isLoading={state.lightbulbs.isAdding} />
           </Col>
         </Row>
       </div>
@@ -152,4 +152,4 @@ export default React.createClass({
   }
 })
 
-//<AddLightbulbForm onSubmit={this.handleAddLightbulb} isLoading={state.lightbulbs.isAdding} />
+// <Button onClick={this.showAddLightbulbForm} className="add-device-btn" size="small" color="accent" variant="fab">+</Button>
