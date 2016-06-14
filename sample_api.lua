@@ -172,7 +172,7 @@ if user ~= nil then
     parameter_value = sn
   })
   response.message = isowner
-  if isowner then
+  if 'OK' == isowner then
     local guest = User.listUsers({filter = "email::like::" .. request.parameters.email})
     if #guest == 1 and guest[1].id ~= nil then
       local resp = User.assignUser({
@@ -209,6 +209,39 @@ if user ~= nil then
 end
 http_error(403, response)
 --#ENDPOINT GET /user/{email}/shared/
+local user = currentUser(request)
+if user ~= nil then
+  if user.email ~= request.body.email then
+    http_error(403, response)
+  else
+    local roles = User.listUserRoles({"id":user.id})
+    local list = {}
+    for _, role in ipairs(roles) do
+      if role.role_id == "owner" then
+        for _, parameter in ipairs(role.parameters) do
+          if parameter.name == "sn" then
+            local guestusers = User.listRoleParamUsers(
+              role_id = "guest", parameter_name = "sn", parameter_value = parameter.value
+            )
+            if guestusers then
+              for _, userid in ipairs(guestusers) do
+                local info = {}
+                info.serialnumber = parameter.value
+                local user = User.getUser({"id":userid})
+                info.email = user.email
+                info.type = "readonly"
+                table.insert(list, info)
+              end
+            end
+          end
+        end
+      end
+    end
+    return list
+  end
+else
+  http_error(403, response)
+end
 --[[return users.getMe(token).then(function(me) {
     if (me.email != parameters.email) {
         return respond('Permission denied', 403);

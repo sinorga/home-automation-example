@@ -69,6 +69,11 @@ http_error_codes = {
     code = 403,
     message = "Permission Denied",
     headers = {}
+  },
+  [404] = {
+    code = 404,
+    message = "Not Found",
+    headers = {}
   }
 }
 

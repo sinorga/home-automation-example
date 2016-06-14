@@ -153,4 +153,24 @@ describe('read/write device', function () {
     console.log(res.body.toString());
     assert.equal(res.statusCode, 200);
   });
+
+  describe('share device', function () {
+    var token;
+    before('login to get token', function () {
+      var res = post('/session', {
+        json: {email: user, password: passw}
+      });
+      assert.equal(res.statusCode, 200);
+      token = JSON.parse(res.body).token;
+    });
+    bit('share device', function () {
+      var res = post('/user/' + user + '/shared/' , {
+        json: {serialnumber: sn},
+        headers: {'Cookie': 'sid=' + token}
+      });
+      console.log(res.body.toString());
+      assert.equal(res.statusCode, 200);
+    });
+  });
+
 });
