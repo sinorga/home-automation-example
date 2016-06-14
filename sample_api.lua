@@ -23,7 +23,7 @@ end
 local ret = User.activateUser({code = request.parameters.code})
 if ret ~= nil and ret.status_code ~= nil then
   response.code = ret.status_code
-  if response.code == 200 then 
+  if response.code == 200 then
     response.message = 'Signed up successfully.'
   else
     response.message = 'Sign up failed. Error: ' .. ret.message
@@ -242,17 +242,44 @@ http_error(403, response)
 });]]
 --#ENDPOINT POST /lightbulb/{sn}
 local sn = tostring(request.parameters.sn)
-for _, alias in ipairs({"state", "hours", "temperature"}) do
-  if request.body[alias] ~= nil then
-    response.message = write(sn, alias, request.body[alias])
+local user = currentUser(request)
+if user ~= nil then
+  local isowner = User.hasUserRoleParam({
+    id = user.id, role_id = "owner", parameter_name = "sn", parameter_value = sn
+  })
+  if isowner == 'OK' then
+    for _, alias in ipairs({"state", "hours", "temperature"}) do
+      if request.body[alias] ~= nil then
+        local result = write(sn, alias, request.body[alias])
+      end
+    end
+    response.code = 200
+  else
+    http_error(403, response)
   end
+else
+  http_error(403, response)
 end
+
 --#ENDPOINT GET /lightbulb/{sn}
 local sn = tostring(request.parameters.sn)
-if sn ~= nil then
-  return kv_read(sn)
+local user = currentUser(request)
+if user ~= nil then
+  local isowner = User.hasUserRoleParam({
+    id = user.id, role_id = "owner", parameter_name = "sn", parameter_value = sn
+  })
+  local isguest = User.hasUserRoleParam({
+    id = user.id, role_id = "guest", parameter_name = "sn", parameter_value = sn
+  })
+  if isowner == 'OK' or isguest == 'OK' then
+    return kv_read(sn)
+  else
+    http_error(403, response)
+  end
+else
+  http_error(403, response)
 end
-http_error(404, response)
+
 --#ENDPOINT GET /debug/{cmd}
 response.message = debug(request.parameters.cmd)
 --#ENDPOINT WEBSOCKET /debug

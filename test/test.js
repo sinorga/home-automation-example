@@ -97,14 +97,14 @@ describe('Provisioning', function () {
   });
   before('remove claimed dvice', function () {
     post('/user/' + user + '/lightbulbs', {
-      json: {serialnumber: 1, link: false},
+      json: {serialnumber: sn, link: false},
       headers: {'Cookie': 'sid=' + token}
     });
   });
 
   bit('claim a device', function () {
     var res = post('/user/' + user + '/lightbulbs', {
-      json: {serialnumber: 1, link: true},
+      json: {serialnumber: sn, link: true},
       headers: {'Cookie': 'sid=' + token}
     });
 
@@ -113,7 +113,7 @@ describe('Provisioning', function () {
   });
   bit('claim a device twice', function () {
     var res = post('/user/' + user + '/lightbulbs', {
-      json: {serialnumber: 1, link: true},
+      json: {serialnumber: sn, link: true},
       headers: {'Cookie': 'sid=' + token}
     });
 
@@ -128,7 +128,29 @@ describe('Provisioning', function () {
     console.log(res.body.toString());
     assert.equal(res.statusCode, 200);
   });
-
-
-
+})
+describe('read/write device', function () {
+  var token;
+  before('login to get token', function () {
+    var res = post('/session', {
+      json: {email: user, password: passw}
+    });
+    assert.equal(res.statusCode, 200);
+    token = JSON.parse(res.body).token;
+  });
+  bit('write device', function () {
+    var res = post('/lightbulb/' + sn , {
+      json: {state: "on", hours: 8},
+      headers: {'Cookie': 'sid=' + token}
+    });
+    console.log(res.body.toString());
+    assert.equal(res.statusCode, 200);
+  });
+  bit('read device', function () {
+    var res = get('/lightbulb/' + sn , {
+      headers: {'Cookie': 'sid=' + token}
+    });
+    console.log(res.body.toString());
+    assert.equal(res.statusCode, 200);
+  });
 });
