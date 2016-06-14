@@ -9,14 +9,16 @@ $exosite-secondary-color:#2C9DB6;
 
 @import "node_modules/muicss/lib/sass/mui";
 
-.mui-appbar {
-  background: $exosite-primary-color;
-
+.appbar {
   img.logo {
     width: auto;
     height: 40px;
     margin-top: -5px;
   }
+}
+
+.container {
+
 }
 
 .mui-btn--secondary {

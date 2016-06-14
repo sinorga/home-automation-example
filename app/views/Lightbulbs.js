@@ -1,17 +1,32 @@
 import React from 'react'
 import ReactDOM from 'react-dom';
-import Row from 'muicss/lib/react/row';
-import Col from 'muicss/lib/react/col';
 import { browserHistory } from 'react-router'
-import Form from 'muicss/lib/react/form'
-import Button from 'muicss/lib/react/button'
-import Input from 'muicss/lib/react/input'
-import mui from 'muicss';
+import FloatingActionButton from 'material-ui/lib/floating-action-button';
+import ContentAdd from 'material-ui/lib/svg-icons/content/add';
 import Spinner from '../components/spinner'
 import AddLightbulbForm from '../components/add_lightbulb_form'
 import { attemptToggleLightbulbState, attemptAddLightbulb, requestLightbulbs } from '../actions/lightbulbs'
 
+import ExositeTheme from './ExositeTheme'
+
+import List from 'material-ui/lib/lists/list';
+import ListItem from 'material-ui/lib/lists/list-item';
+import ActionInfo from 'material-ui/lib/svg-icons/action/info';
+import Divider from 'material-ui/lib/divider';
+import Avatar from 'material-ui/lib/avatar';
+import LightbulbIcon from 'material-ui/lib/svg-icons/action/lightbulb-outline.js';
+import ActionAssignment from 'material-ui/lib/svg-icons/action/assignment';
+import Colors from 'material-ui/lib/styles/colors';
+import IconButton from 'material-ui/lib/icon-button';
+import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
+import IconMenu from 'material-ui/lib/menus/icon-menu';
+import MenuItem from 'material-ui/lib/menus/menu-item';
+import Checkbox from 'material-ui/lib/checkbox';
+import Popover from 'material-ui/lib/popover/popover';
+import RaisedButton from 'material-ui/lib/raised-button';
+
 export default React.createClass({
+
   contextTypes: {
     store: React.PropTypes.object
   },
@@ -19,7 +34,7 @@ export default React.createClass({
   showLightbulbMenu(event) {
     console.log("in showLightbulbMenu");
     // initialize modal element
-    //var modalEl = document.createElement('div');
+    var modalEl = document.createElement('div');
     //modalEl.style.width = '100px';
     //modalEl.style.height = 'auto';
     //modalEl.style.position = 'relative';
@@ -31,9 +46,17 @@ export default React.createClass({
     mui.overlay('on', modalEl);
   },
 
+  openMenu() {
+    console.log("in openMenu")
+  },
+
   showAddLightbulbForm() {
     console.log("in showAddLightbulbForm");
-    mui.overlay('on');
+    //var modalEl = document.createElement('div');
+    //
+    ////ReactDOM.render(<AddLightbulbForm onSubmit={this.handleAddLightbulb} isLoading={false} />, modalEl);
+    //
+    //mui.overlay('on');
   },
 
   handleAddLightbulb (request) {
@@ -49,41 +72,41 @@ export default React.createClass({
       return
     }
 
-    this.unsubscribe = this.context.store.subscribe(() => {
-      // FIXME: This is definitely the wrong way to do this, use react-redux's `connect`
-      this.forceUpdate()
-    })
-
-    // TODO: replace all these calls with redux-thunk
-    requestLightbulbs()(this.context.store.dispatch, this.context.store.getState)
-
-    this.pollInterval = 1000
-
-    this.updateStatuses()
-
-    window.addEventListener("blur", this.onblur)
-    window.addEventListener("focus", this.onfocus)
+    //this.unsubscribe = this.context.store.subscribe(() => {
+    //  // FIXME: This is definitely the wrong way to do this, use react-redux's `connect`
+    //  this.forceUpdate()
+    //})
+    //
+    //// TODO: replace all these calls with redux-thunk
+    //requestLightbulbs()(this.context.store.dispatch, this.context.store.getState)
+    //
+    //this.pollInterval = 1000
+    //
+    //this.updateStatuses()
+    //
+    //window.addEventListener("blur", this.onblur)
+    //window.addEventListener("focus", this.onfocus)
   },
 
-  onblur () {
-    this.pollInterval = 10000
-  },
+  //onblur () {
+  //  this.pollInterval = 10000
+  //},
+  //
+  //onfocus () {
+  //  this.pollInterval = 1000
+  //  this.updateStatuses()
+  //},
 
-  onfocus () {
-    this.pollInterval = 1000
-    this.updateStatuses()
-  },
-
-  updateStatuses () {
-    let state = this.context.store.getState()
-    if (state.lightbulbs.isFetching == false) {
-      requestLightbulbs()(this.context.store.dispatch, this.context.store.getState)
-    }
-
-    this.pollTimer = window.setTimeout(() => {
-      this.updateStatuses()
-    }, this.pollInterval)
-  },
+  //updateStatuses () {
+  //  let state = this.context.store.getState()
+  //  if (state.lightbulbs.isFetching == false) {
+  //    requestLightbulbs()(this.context.store.dispatch, this.context.store.getState)
+  //  }
+  //
+  //  this.pollTimer = window.setTimeout(() => {
+  //    this.updateStatuses()
+  //  }, this.pollInterval)
+  //},
 
   componentWillUnmount () {
     if (typeof this.unsubscribe == "function") { this.unsubscribe() }
@@ -114,42 +137,66 @@ export default React.createClass({
 
     let state = this.context.store.getState()
 
+    const actionButtonStyle = {
+      'float': 'right',
+      color: '#FF9300'
+    };
+
+    var addMoreButton = (
+      <FloatingActionButton
+        onMouseDown={this.showAddLightbulbForm}
+        onTouchTap={this.showAddLightbulbForm}
+        backgroundColor={ExositeTheme.palette.accent1Color}
+        mini={true} >
+        <ContentAdd />
+      </FloatingActionButton> );
+
+    const iconButtonElement = (
+      <IconButton
+        touch={true}
+        disabled={false}
+        >
+        <MoreVertIcon color={Colors.grey400} />
+      </IconButton>
+    );
+
+    const rightIconMenu = (
+      <IconMenu
+        iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
+        anchorOrigin={{horizontal: 'left', vertical: 'top'}}
+        targetOrigin={{horizontal: 'left', vertical: 'top'}}
+        >
+        <MenuItem primaryText="Refresh" />
+        <MenuItem primaryText="Send feedback" />
+        <MenuItem primaryText="Settings" />
+        <MenuItem primaryText="Help" />
+        <MenuItem primaryText="Sign out" />
+      </IconMenu>
+    );
+
+
+
+
     return (
       <div>
         <h2>Devices {spinner_when_waiting}</h2>
         {error_message}
         {info_message_when_none}
-          {state.lightbulbs.statuses.sort((a,b) => a.serialnumber > b.serialnumber).map( (m,i) => {
-            const statusIconClass = "material-icons md-36 status-icon " + m.state;
+        <List>
+        {state.lightbulbs.statuses.sort((a,b) => a.serialnumber > b.serialnumber).map( (m,i) => {
 
             return (
-              <Row className="device-list-item">
-                <Col xs="2" md="1" className="status-icon-col"><i className={statusIconClass}>lightbulb_outline</i></Col>
-                <Col xs="8" md="10" className="name-and-serial">
-                  <Row>
-                    <Col xs="12">{m.name}</Col>
-                  </Row>
-                  <Row>
-                    <Col xs="12" className="serialnumber">{m.serialnumber}</Col>
-                  </Row>
-                </Col>
-                <Col xs="2" md="1">
-                  <div onClick={this.showLightbulbMenu} className="item-menu-icon">
-                    <i className="material-icons md-36">more_vert</i>
-                  </div>
-                </Col>
-              </Row>
-            )
-          })}
-        <Row>
-          <Col xs="12">
-            <Button onClick={this.showAddLightbulbForm} className="add-device-btn" size="small" color="accent" variant="fab">+</Button>
-          </Col>
-        </Row>
-      </div>
+                <ListItem key={i}
+                          leftAvatar={<Avatar icon={<LightbulbIcon />} backgroundColor={ m.state === 'on' ? Colors.yellow600 : Colors.grey300} />}
 
+                          primaryText={m.name}/> )
+          })}
+
+          <ListItem rightIconButton={rightIconMenu} />
+          <ListItem rightIconButton={addMoreButton} />
+        </List>
+       </div>
     )
   }
 })
 
-//<AddLightbulbForm onSubmit={this.handleAddLightbulb} isLoading={state.lightbulbs.isAdding} />
