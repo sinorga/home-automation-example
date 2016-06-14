@@ -21,9 +21,7 @@ export default React.createClass({
             {logout_if_logged_in}
           </Appbar>
           <Container>
-            <div className="mui--text-center">
             {this.props.children}
-            </div>
           </Container>
         </div>
       </Provider>

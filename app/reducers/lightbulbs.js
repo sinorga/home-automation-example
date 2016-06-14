@@ -12,25 +12,36 @@ function getInitialState () {
 function getTestingState () {
   return {
     isFetching: false,
+    isAdding: false,
     error: null,
     statuses: [{
       id: "01:23:45:67:89:00",
+      serialnumber: '1-BA30-9ANALK',
+      name: "Lightbulb 1",
       state: "on",
       isUpdating: false
     },{
       id: "01:23:45:67:89:01",
+      serialnumber: '2-NKA-98Y07AH',
+      name: "Lightbulb 2",
       state: "on",
       isUpdating: false
     },{
       id: "01:23:45:67:89:02",
+      serialnumber: '3-897-HJA8O-7YSE',
+      name: "Lightbulb 3",
       state: "on",
       isUpdating: false
     },{
       id: "01:23:45:67:89:03",
+      serialnumber: '4-AI0-8YWGE-HSD',
+      name: "Lightbulb 4",
       state: "off",
       isUpdating: false
     },{
       id: "01:23:45:67:89:04",
+      serialnumber: '5-23GA-0876WEGA',
+      name: "Lightbulb 5",
       state: "off",
       isUpdating: false
     }],
@@ -42,7 +53,7 @@ function getTestingState () {
 }
 
 function reducer (state, action) {
-  if (state === undefined) { return getInitialState() }
+  if (state === undefined) { return getTestingState() }
 
   switch (action.type) {
     case 'ATTEMPT_REQUEST_STATES':
