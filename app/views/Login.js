@@ -1,5 +1,6 @@
 import React from 'react';
 import { browserHistory } from 'react-router';
+import Link from 'react-router';
 
 import Form from 'muicss/lib/react/form'
 import Button from 'muicss/lib/react/button'
@@ -67,7 +68,7 @@ export default React.createClass({
 
     return (
       <div>
-        <AppBar style={ appBarStyle } showMenuIconButton={false} iconElementRight={ <RaisedButton label="SIGNUP" primary={true} /> } />
+        <AppBar style={ appBarStyle } showMenuIconButton={false} iconElementRight={ <RaisedButton linkButton={true} href="/signup" label="SIGNUP" primary={true} /> } />
 
         <Container>
           <div className='logo-container'>
@@ -79,7 +80,8 @@ export default React.createClass({
           <Form onSubmit={this.handleLogin}>
             <Input label='Email address' floatingLabel/>
             <Input type='password' label='Password' floatingLabel/>
-            <Button className='login-button' color='primary'>Login</Button> {spinner_when_waiting}
+            <Button className='login-button' color='primary'>Login </Button>
+            {spinner_when_waiting}
           </Form>
 
           <FlatButton label="FORGOT PASSWORD?" secondary={true} className='forgot-password-button'/>

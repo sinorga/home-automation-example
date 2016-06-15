@@ -1,11 +1,13 @@
 import React from 'react'
 import ReactDOM from 'react-dom';
 import { browserHistory } from 'react-router'
+import { Link } from 'react-router'
 import FloatingActionButton from 'material-ui/lib/floating-action-button';
 import Spinner from '../components/spinner'
 import AddLightbulbForm from '../components/add_lightbulb_form'
 import { attemptToggleLightbulbState, attemptAddLightbulb, requestLightbulbs } from '../actions/lightbulbs'
 import Container from 'muicss/lib/react/container';
+import { logout } from '../actions/auth'
 
 import ContentAdd from 'material-ui/lib/svg-icons/content/add';
 import AppBar from 'material-ui/lib/app-bar';
@@ -17,17 +19,9 @@ import Avatar from 'material-ui/lib/avatar';
 import LightbulbIcon from 'material-ui/lib/svg-icons/action/lightbulb-outline.js';
 import ActionAssignment from 'material-ui/lib/svg-icons/action/assignment';
 import Colors from 'material-ui/lib/styles/colors';
-import IconButton from 'material-ui/lib/icon-button';
-import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
-import IconMenu from 'material-ui/lib/menus/icon-menu';
-import MenuItem from 'material-ui/lib/menus/menu-item';
-import Checkbox from 'material-ui/lib/checkbox';
-import Popover from 'material-ui/lib/popover/popover';
 import RaisedButton from 'material-ui/lib/raised-button';
 import FlatButton from 'material-ui/lib/flat-button';
 import Dialog from 'material-ui/lib/dialog';
-
-import { logout } from '../actions/auth'
 
 export default React.createClass({
 
@@ -54,6 +48,10 @@ export default React.createClass({
   handleAddLightbulb(request) {
     attemptAddLightbulb(request.sn)(this.context.store.dispatch, this.context.store.getState)
     this.closeLightbulbModal();
+  },
+
+  loadLightbulb(arg) {
+    console.log('in loadLightbulb. arg: ', arg.target);
   },
 
   /**
@@ -135,20 +133,19 @@ export default React.createClass({
       this.context.store.getState().auth.error == null
       ? <div></div>
       : <div className='messagebox error'>{this.context.store.getState().auth.error}</div>
-    )
+    );
 
     let info_message_when_none = (
       this.context.store.getState().lightbulbs.statuses.length === 0
       ? <div className='messagebox info'>You do not have any lightbulbs, you can add one below.</div>
       : <div></div>
-    )
+    );
 
     let appBarStyle = {
-      backgroundColor: '#ffffff',
-      boxShadow: 'none'
+      backgroundColor: '#ffffff'
     };
 
-    let state = this.context.store.getState()
+    let state = this.context.store.getState();
 
     const actionButtonStyle = {
       'float': 'right',
@@ -164,6 +161,7 @@ export default React.createClass({
         secondary={true}
         onTouchTap={this.closeLightbulbModal}
         />,
+
       <FlatButton
         label="Submit"
         primary={true}
@@ -178,11 +176,11 @@ export default React.createClass({
                   style={{ color: 'rgb(255, 64, 129)' }}
                   onTouchStart={this.handleLogout}
                   onMouseUp={this.handleLogout} />
-    )
+    );
 
     return (
       <div>
-        <AppBar title={ <div className='appbar-logo-container'><img src='images/example_iot_company_logo_mark.svg' /></div> }
+        <AppBar title={ <div className='appbar-logo-container'><img src='/images/example_iot_company_logo_mark.svg' /></div> }
                 style={ appBarStyle }
                 iconElementRight={ logoutButton }
                 showMenuIconButton={false}  />
@@ -203,13 +201,14 @@ export default React.createClass({
           {info_message_when_none}
           <List>
           {state.lightbulbs.statuses.sort((a,b) => a.serialnumber > b.serialnumber).map( (m,i) => {
-              return (
-                  <div key={i}>
+            const link = `/lightbulbs/${m.serialnumber}`;
+            return (
+                  <Link to={link} key={i}>
                     <ListItem leftAvatar={<Avatar icon={<LightbulbIcon />} backgroundColor={ m.state === 'on' ? Colors.yellow600 : Colors.grey300} />}
                               primaryText={m.name}
-                              secondaryText={m.serialnumber}/>
+                              secondaryText={m.serialnumber} />
                       <Divider />
-                  </div>
+                  </Link>
                 )
             })}
           </List>

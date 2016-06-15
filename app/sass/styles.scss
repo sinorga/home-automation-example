@@ -61,7 +61,19 @@ $mui-btn-primary-bg-color: #00bcd4;
   text-align: center;
 }
 
-.login-button {
+.nav-bar {
+  height:30px;
+  padding: 5px 10px;
+  margin: 10px 0;
+
+  .home-icon {
+    color: #FFFFFF;
+    margin-top:5px;
+    display: inline-block;
+  }
+}
+
+.login-button, .signup-button {
   width:100%;
 }
 
@@ -203,4 +215,10 @@ textarea {
 .progress > div:after {
   transform: rotate(-135deg);
   background: #bbb;
+}
+
+form {
+  .progress {
+    left: 45%;
+  }
 }
