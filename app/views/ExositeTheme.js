@@ -18,7 +18,7 @@ export default {
   zIndex: zIndex,
   fontFamily: 'Roboto, sans-serif',
   palette: {
-    primary1Color: ExositeColors.exoNavy,
+    primary1Color: '#ffffff',
     primary2Color: ExositeColors.exoBlue,
     primary3Color: ExositeColors.exoGray,
     accent1Color: ExositeColors.exoOrange,

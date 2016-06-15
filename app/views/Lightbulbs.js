@@ -2,13 +2,13 @@ import React from 'react'
 import ReactDOM from 'react-dom';
 import { browserHistory } from 'react-router'
 import FloatingActionButton from 'material-ui/lib/floating-action-button';
-import ContentAdd from 'material-ui/lib/svg-icons/content/add';
 import Spinner from '../components/spinner'
 import AddLightbulbForm from '../components/add_lightbulb_form'
 import { attemptToggleLightbulbState, attemptAddLightbulb, requestLightbulbs } from '../actions/lightbulbs'
+import Container from 'muicss/lib/react/container';
 
-import ExositeTheme from './ExositeTheme'
-
+import ContentAdd from 'material-ui/lib/svg-icons/content/add';
+import AppBar from 'material-ui/lib/app-bar';
 import List from 'material-ui/lib/lists/list';
 import ListItem from 'material-ui/lib/lists/list-item';
 import ActionInfo from 'material-ui/lib/svg-icons/action/info';
@@ -26,6 +26,8 @@ import Popover from 'material-ui/lib/popover/popover';
 import RaisedButton from 'material-ui/lib/raised-button';
 import FlatButton from 'material-ui/lib/flat-button';
 import Dialog from 'material-ui/lib/dialog';
+
+import { logout } from '../actions/auth'
 
 export default React.createClass({
 
@@ -54,6 +56,19 @@ export default React.createClass({
     this.closeLightbulbModal();
   },
 
+  /**
+   * TODO: this can't the right way to handle logging out...
+   */
+  handleLogout (event) {
+    event.preventDefault();
+
+    logout()(this.context.store.dispatch)
+
+    browserHistory.push('/login')
+
+    this.forceUpdate()
+  },
+
   componentWillMount() {
     let state = this.context.store.getState()
 
@@ -62,6 +77,8 @@ export default React.createClass({
       browserHistory.push('/login')
       return
     }
+
+    this.forceUpdate()
 
     //this.unsubscribe = this.context.store.subscribe(() => {
     //  // FIXME: This is definitely the wrong way to do this, use react-redux's `connect`
@@ -126,13 +143,18 @@ export default React.createClass({
       : <div></div>
     )
 
+    let appBarStyle = {
+      backgroundColor: '#ffffff',
+      boxShadow: 'none'
+    };
+
     let state = this.context.store.getState()
 
     const actionButtonStyle = {
       'float': 'right',
       color: '#FF9300',
-      marginRight: 10,
-      marginTop: 10,
+      marginRight: 20,
+      marginTop: -10,
       marginBottom:30
     };
 
@@ -147,50 +169,51 @@ export default React.createClass({
         primary={true}
         disabled={true}
         onTouchTap={this.handleAddLightbulb}
-        />,
+        />
     ];
+
+    const logoutButton = (
+      <FlatButton label="LOGOUT"
+                  primary={true}
+                  style={{ color: 'rgb(255, 64, 129)' }}
+                  onTouchStart={this.handleLogout}
+                  onMouseUp={this.handleLogout} />
+    )
 
     return (
       <div>
-        <h2>Devices {spinner_when_waiting}</h2>
-        {error_message}
-        {info_message_when_none}
-        <List>
-        {state.lightbulbs.statuses.sort((a,b) => a.serialnumber > b.serialnumber).map( (m,i) => {
-            const rightIconMenu = (
-              <IconMenu
-                iconButtonElement={<IconButton><MoreVertIcon color={Colors.grey400} /></IconButton>}
-                anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-                targetOrigin={{horizontal: 'right', vertical: 'top'}} >
-                <MenuItem primaryText="Turn on" />
-                <MenuItem primaryText="Add Alert" />
-                <MenuItem primaryText="Share" />
-                <MenuItem primaryText="Edit" />
-                <MenuItem primaryText="Delete" />
-              </IconMenu>
-            );
+        <AppBar title={ <div className='appbar-logo-container'><img src='images/example_iot_company_logo_mark.svg' /></div> }
+                style={ appBarStyle }
+                iconElementRight={ logoutButton }
+                showMenuIconButton={false}  />
 
-            return (
-                <div key={i}>
-                  <ListItem leftAvatar={<Avatar icon={<LightbulbIcon />} backgroundColor={ m.state === 'on' ? Colors.yellow600 : Colors.grey300} />}
-                            rightIconButton={rightIconMenu}
-                            primaryText={m.name}
-                            secondaryText={m.serialnumber}/>
-                    <Divider />
-                </div>
-              )
-          })}
-        </List>
-
-        <div>
+        <div className='masthead'>
+          <p className='headline'>My Home {spinner_when_waiting}</p>
           <FloatingActionButton
             onMouseDown={this.showLightbulbModal}
-            backgroundColor={ExositeTheme.palette.accent1Color}
-            mini={true}
+            backgroundColor={ '#FF921E' }
+            mini={false}
             style={actionButtonStyle}>
             <ContentAdd />
           </FloatingActionButton>
         </div>
+
+        <Container>
+          {error_message}
+          {info_message_when_none}
+          <List>
+          {state.lightbulbs.statuses.sort((a,b) => a.serialnumber > b.serialnumber).map( (m,i) => {
+              return (
+                  <div key={i}>
+                    <ListItem leftAvatar={<Avatar icon={<LightbulbIcon />} backgroundColor={ m.state === 'on' ? Colors.yellow600 : Colors.grey300} />}
+                              primaryText={m.name}
+                              secondaryText={m.serialnumber}/>
+                      <Divider />
+                  </div>
+                )
+            })}
+          </List>
+        </Container>
 
         <Dialog
           title=""
@@ -206,3 +229,17 @@ export default React.createClass({
   }
 })
 
+
+
+//const rightIconMenu = (
+//  <IconMenu
+//    iconButtonElement={<IconButton><MoreVertIcon color={Colors.grey400} /></IconButton>}
+//    anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+//    targetOrigin={{horizontal: 'right', vertical: 'top'}} >
+//    <MenuItem primaryText="Turn on" />
+//    <MenuItem primaryText="Add Alert" />
+//    <MenuItem primaryText="Share" />
+//    <MenuItem primaryText="Edit" />
+//    <MenuItem primaryText="Delete" />
+//  </IconMenu>
+//);

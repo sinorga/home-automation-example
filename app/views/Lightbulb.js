@@ -12,20 +12,16 @@ export default React.createClass({
     store: React.PropTypes.object
   },
 
-  componentWillMount () {
-    let state = this.context.store.getState()
-
-    // FIXME: This is probably the wrong way to do this.
-    if (state.auth.session === undefined) {
-      browserHistory.push('/login')
-    }
-  },
-
-  componentWillMount () {
+  componentWillMount() {
     let state = this.context.store.getState()
     this.unsubscribe = this.context.store.subscribe(() => {
       if (state.lightbulbs.statuses.filter(v => v.serialnumber == this.props.params.sn).length == 0) {
         browserHistory.push('/lightbulbs')
+      }
+
+      // FIXME: This is probably the wrong way to do this.
+      if (state.auth.session === undefined) {
+        browserHistory.push('/login')
       }
       // FIXME: This is definitely the wrong way to do this, use react-redux's `connect`
       this.forceUpdate()
@@ -44,7 +40,7 @@ export default React.createClass({
     attemptDeleteLightbulb(this.props.params.sn)(this.context.store.dispatch,this.context.store.getState)
   },
 
-  render () {
+  render() {
     let spinner_when_waiting = (
       this.context.store.getState().lightbulbs.isFetching
       ? <Spinner />
