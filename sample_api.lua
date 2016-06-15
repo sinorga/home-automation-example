@@ -304,12 +304,12 @@ if value.state == request.body.state then -- check condition
       if request.body.active then
         if not alert.timer_running then --enable but not running
           local tid = sn .. "_state"
-          Timer.sendAfter(
+          Timer.sendAfter({
             message = req_alert.message,
             duration = req_alert.timer * 60 * 1000,
             timer_id = tid,
             soltion_id = ""
-          )
+          })
           req_alert.timer_running = true
           req_alert.timer_id = tid
         end
@@ -318,14 +318,15 @@ if value.state == request.body.state then -- check condition
           Timer.cancel({timer_id = alert.timer_id})
         end
       end
+    end
   else -- no exist alert
     if request.body.active then
-      Timer.sendAfter(
+      Timer.sendAfter({
         message = req_alert.message,
         duration = req_alert.timer * 60 * 1000,
         timer_id = tid,
         soltion_id = ""
-      )
+      })
       req_alert.timer_running = true
       req_alert.timer_id = tid
     end
