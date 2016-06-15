@@ -33,23 +33,28 @@ export default React.createClass({
     store: React.PropTypes.object
   },
 
+  getInitialState() {
+    return {
+      lightbulbModalOpen: false
+    }
+  },
+
   showLightbulbModal() {
     console.log("in showLightbulbModal");
-    this.lightbulbOpen = true;
+    this.setState({lightbulbModalOpen: true});
   },
 
   closeLightbulbModal() {
     console.log("in closeLightbulbModal");
-    this.lightbulbOpen = false;
+    this.setState({lightbulbModalOpen: false});
   },
 
-  handleAddLightbulb (request) {
+  handleAddLightbulb(request) {
     attemptAddLightbulb(request.sn)(this.context.store.dispatch, this.context.store.getState)
+    this.closeLightbulbModal();
   },
 
-  componentWillMount () {
-    this.lightbulbOpen = false;
-
+  componentWillMount() {
     let state = this.context.store.getState()
 
     // FIXME: This is probably the wrong way to do this.
@@ -94,7 +99,7 @@ export default React.createClass({
   //  }, this.pollInterval)
   //},
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     if (typeof this.unsubscribe == "function") { this.unsubscribe() }
     if (this.pollTimer != undefined) { window.clearTimeout(this.pollTimer); this.pollTimer = undefined}
 
@@ -102,7 +107,7 @@ export default React.createClass({
     window.removeEventListener("focus", this.onfocus)
   },
 
-  render () {
+  render() {
     let spinner_when_waiting = (
       this.context.store.getState().lightbulbs.isFetching && this.context.store.getState().lightbulbs.statuses.length == 0
       ? <Spinner />
@@ -188,12 +193,13 @@ export default React.createClass({
         </div>
 
         <Dialog
-          title="Dialog With Actions"
-          actions={actions}
+          title=""
+          contentStyle={{ maxWidth: 400 }}
           modal={true}
-          open={this.lightbulbOpen}
+          open={this.state.lightbulbModalOpen}
           onRequestClose={this.closeLightbulbModal} >
-          The actions in this window were passed in as an array of React objects.
+
+          <AddLightbulbForm onSubmit={this.handleAddLightbulb} isLoading={state.lightbulbs.isAdding} />
         </Dialog>
        </div>
     )

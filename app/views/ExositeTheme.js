@@ -19,8 +19,8 @@ export default {
   fontFamily: 'Roboto, sans-serif',
   palette: {
     primary1Color: ExositeColors.exoNavy,
-    primary2Color: ExositeColors.ExoBlue,
-    primary3Color: ExositeColors.ExoGray,
+    primary2Color: ExositeColors.exoBlue,
+    primary3Color: ExositeColors.exoGray,
     accent1Color: ExositeColors.exoOrange,
     accent2Color: ExositeColors.exoMediumBlue,
     accent3Color: ExositeColors.exoLightGray,
