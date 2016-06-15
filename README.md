@@ -1,9 +1,7 @@
-Example App
+Home Automation Example App
 ==================
 
-This application is a simple demonstration.
-
-It's written as a React app with ****** modules and endpoints.
+This application is written as a React app with Murano Solution event handlers, routes, modules and static assets.
 
 
 Using This Example
@@ -17,23 +15,23 @@ npm install
 npm run compile
 ```
 
-To deploy, first install the ****** command line tool.
- 
+To deploy, first install the exosite command line tool.
+
 
 ```
-sudo pip install ************************************************
+sudo pip install exosite
 ```
 
-Initialize the project with your solution and product id. These IDs may be found here: ********************************.
+Initialize the project with your solution and product id.
 
 ````
-****** --init 
+exosite --init
 ```
 
 Then deploy this sample application into your solution:
 
 ```
-****** --deploy
+exosite --deploy
 ```
 
 To run the web application static assets locally, create a .env file in the root of the project with your solution URL, like this:

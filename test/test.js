@@ -46,6 +46,7 @@ Response:
 
 var user = 'dominicletz+15@exosite.com';
 var passw = 'secr*etpassw0rd';
+var sn = '1';
 
 describe('User', function () {
   before(function (done) {
@@ -129,7 +130,7 @@ describe('Provisioning', function () {
     console.log(res.body.toString());
     assert.equal(res.statusCode, 200);
   });
-})
+});
 describe('read/write device', function () {
   var token;
   before('login to get token', function () {
@@ -140,15 +141,15 @@ describe('read/write device', function () {
     token = JSON.parse(res.body).token;
   });
   bit('write device', function () {
-    var res = post('/lightbulb/' + sn , {
-      json: {state: "on", hours: 8},
+    var res = post('/lightbulb/' + sn, {
+      json: {state: 'on', hours: 8},
       headers: {'Cookie': 'sid=' + token}
     });
     console.log(res.body.toString());
     assert.equal(res.statusCode, 200);
   });
   bit('read device', function () {
-    var res = get('/lightbulb/' + sn , {
+    var res = get('/lightbulb/' + sn, {
       headers: {'Cookie': 'sid=' + token}
     });
     console.log(res.body.toString());
@@ -165,7 +166,7 @@ describe('read/write device', function () {
       token = JSON.parse(res.body).token;
     });
     bit('share device to user', function () {
-      var res = post('/user/' + user + '/shared/' , {
+      var res = post('/user/' + user + '/shared/', {
         json: {serialnumber: sn},
         headers: {'Cookie': 'sid=' + token}
       });
@@ -173,7 +174,7 @@ describe('read/write device', function () {
       assert.equal(res.statusCode, 200);
     });
     bit('drop shared device to user', function () {
-      var res = del('/user/' + user + '/shared/' + sn , {
+      var res = del('/user/' + user + '/shared/' + sn, {
         json: true,
         headers: {'Cookie': 'sid=' + token}
       });
@@ -181,12 +182,11 @@ describe('read/write device', function () {
       assert.equal(res.statusCode, 200);
     });
     bit('get shared devices list', function () {
-      var res = get('/user/' + user + '/shared/' , {
+      var res = get('/user/' + user + '/shared/', {
         headers: {'Cookie': 'sid=' + token}
       });
       console.log(res.body.toString());
       assert.equal(res.statusCode, 200);
     });
   });
-
 });
