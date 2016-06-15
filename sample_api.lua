@@ -211,26 +211,26 @@ http_error(403, response)
 --#ENDPOINT GET /user/{email}/shared/
 local user = currentUser(request)
 if user ~= nil then
-  if user.email ~= request.body.email then
+  if user.email ~= request.parameters.email then
     http_error(403, response)
   else
-    local roles = User.listUserRoles({"id":user.id})
+    local roles = User.listUserRoles({id=user.id})
     local list = {}
     for _, role in ipairs(roles) do
       if role.role_id == "owner" then
         for _, parameter in ipairs(role.parameters) do
           if parameter.name == "sn" then
-            local guestusers = User.listRoleParamUsers(
+            local sn = parameter.value
+            local user_info = {serialnumber=sn, email=user.email, type="full"}
+            table.insert(list, user_info)
+            local guestusers = User.listRoleParamUsers({
               role_id = "guest", parameter_name = "sn", parameter_value = parameter.value
-            )
-            if guestusers then
-              for _, userid in ipairs(guestusers) do
-                local info = {}
-                info.serialnumber = parameter.value
-                local user = User.getUser({"id":userid})
-                info.email = user.email
-                info.type = "readonly"
-                table.insert(list, info)
+            })
+            if guestusers ~= nil then
+              for _, guestid in ipairs(guestusers) do
+                local guest = User.getUser({id=guestid})
+                local guest_info = {serialnumber=sn, email=guest.email, type="readonly"}
+                table.insert(list, guest_info)
               end
             end
           end

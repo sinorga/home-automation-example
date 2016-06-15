@@ -163,9 +163,16 @@ describe('read/write device', function () {
       assert.equal(res.statusCode, 200);
       token = JSON.parse(res.body).token;
     });
-    bit('share device', function () {
+    bit('share device to user', function () {
       var res = post('/user/' + user + '/shared/' , {
         json: {serialnumber: sn},
+        headers: {'Cookie': 'sid=' + token}
+      });
+      console.log(res.body.toString());
+      assert.equal(res.statusCode, 200);
+    });
+    bit('get shared devices', function () {
+      var res = get('/user/' + user + '/shared/' , {
         headers: {'Cookie': 'sid=' + token}
       });
       console.log(res.body.toString());
