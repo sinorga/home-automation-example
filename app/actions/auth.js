@@ -23,6 +23,7 @@ export function attemptSignup (email, password) {
     })
 
     var oReq = new window.XMLHttpRequest()
+    oReq.withCredentials = true;
     oReq.addEventListener('load', signupAttemptResponseHandler)
     oReq.addEventListener('error', signupAttemptResponseHandler)
     oReq.open('PUT', API_BASE_URL + '/user/' + email)
@@ -115,6 +116,7 @@ export function attemptLogin (email, password) {
     })
 
     var oReq = new window.XMLHttpRequest()
+    oReq.withCredentials = true;
     oReq.addEventListener('load', loginAttemptResponseHandler)
     oReq.addEventListener('error', loginAttemptResponseHandler)
     oReq.open('POST', API_BASE_URL + '/session')
