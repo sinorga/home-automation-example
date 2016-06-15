@@ -130,11 +130,9 @@ else
   response.code = 409
 end
 --#ENDPOINT GET /user/{email}/lightbulbs
-local dataports = {"state", "temperature", "hours"};
 local user = currentUser(request)
 if user ~= nil then
   local list = {}
-  local obj = {}
   local roles = User.listUserRoles({id = user.id})
   for _, role in ipairs(roles) do
     for _, parameter in ipairs(role.parameters) do
@@ -288,7 +286,53 @@ if user ~= nil then
 else
   http_error(403, response)
 end
-
+--#ENDPOINT POST /lightbulb/{sn}/alert
+--{state:on, timer:5, email:user, active:true, message=""}
+local sn = request.parameters.sn
+local value = kv_read(sn)
+local req_alert = {
+  state = request.body.state,
+  timer = request.body.timer,
+  active = request.body.active,
+  email = request.body.email,
+  message = request.body.message,
+  timer_running = false
+}
+if value.state == request.body.state then -- check condition
+  if value.alerts ~= nil then
+    for _ ,alert in ipairs(value.alerts) do
+      if request.body.active then
+        if not alert.timer_running then --enable but not running
+          local tid = sn .. "_state"
+          Timer.sendAfter(
+            message = req_alert.message,
+            duration = req_alert.timer * 60 * 1000,
+            timer_id = tid,
+            soltion_id = ""
+          )
+          req_alert.timer_running = true
+          req_alert.timer_id = tid
+        end
+      else
+        if alert.timer_running then --disable but running
+          Timer.cancel({timer_id = alert.timer_id})
+        end
+      end
+  else -- no exist alert
+    if request.body.active then
+      Timer.sendAfter(
+        message = req_alert.message,
+        duration = req_alert.timer * 60 * 1000,
+        timer_id = tid,
+        soltion_id = ""
+      )
+      req_alert.timer_running = true
+      req_alert.timer_id = tid
+    end
+  end
+end
+value.alerts = {req_alert}
+kv_write(sn, value)
 --#ENDPOINT GET /debug/{cmd}
 response.message = debug(request.parameters.cmd)
 --#ENDPOINT WEBSOCKET /debug
