@@ -171,7 +171,6 @@ if user ~= nil then
     parameter_name = "sn",
     parameter_value = sn
   })
-  response.message = isowner
   if 'OK' == isowner then
     local guest = User.listUsers({filter = "email::like::" .. request.parameters.email})
     if #guest == 1 and guest[1].id ~= nil then
@@ -193,17 +192,26 @@ if user ~= nil then
 end
 http_error(403, response)
 --#ENDPOINT DELETE /user/{email}/shared/{sn}
-local sn = request.body.serialnumber
+local sn = request.parameters.sn
 local user = currentUser(request)
 if user ~= nil then
-  local isowner = User.checkUserRole({id = user.id, role_id = "owner", parameters = {
-    name = "owner",
-    value = sn
-  }})
-  if isowner then
-    local guest = User.findUserByEmail({email = request.parameters.email})
-    if guest ~= nil and guest.id ~= nil then
-      User.deassignUserParam({id = guest.id, role_id = "guest", parameters = {{name = "sn", value = sn}}})
+  local isowner = User.hasUserRoleParam({
+    id = user.id, role_id = "owner", parameter_name = "sn", parameter_value = sn
+  })
+  if isowner == 'OK' then
+    local guestusers = User.listRoleParamUsers({
+      role_id = "guest", parameter_name = "sn", parameter_value = sn
+    })
+    if guestusers ~= nil then
+      for _, guestid in ipairs(guestusers) do
+        local guest = User.getUser({id=guestid})
+        if guest.email == request.parameters.email then
+          local result = User.deassignUserParam({
+            id = guest.id, role_id = "guest", parameter_name = "sn", parameter_value = sn
+          })
+          return result
+        end
+      end
     end
   end
 end
@@ -239,40 +247,8 @@ if user ~= nil then
     end
     return list
   end
-else
-  http_error(403, response)
 end
---[[return users.getMe(token).then(function(me) {
-    if (me.email != parameters.email) {
-        return respond('Permission denied', 403);
-    } else {
-        return users.getAssignedRoles(me.id);
-    }
-}).filter(function(role) {
-    return role.parameter && role.role_id == 'owner';
-}).map(function(role) {
-    return promise.props({
-        'serialnumber': role.parameter,
-        'email': users.getAssignedUsers('guest', role.parameter).map(function(id) {
-            return users.getUser(id)
-        }).map(function(user) {
-            return user.email;
-        })
-    });
-}).all().then(function(sns) {
-    var results = [];
-    for (var i = 0; i < sns.length; i++) {
-        var device = sns[i];
-        for (var j = 0; j < device.email.length; j++) {
-            results.push({
-                'serialnumber': device.serialnumber,
-                'type': 'guest',
-                'email': device.email[j]
-            });
-        }
-    }
-    return results;
-});]]
+http_error(403, response)
 --#ENDPOINT POST /lightbulb/{sn}
 local sn = tostring(request.parameters.sn)
 local user = currentUser(request)

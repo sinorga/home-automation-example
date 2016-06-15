@@ -18,6 +18,7 @@ var bit = function (label, fun) {
 var get = api('get');
 var put = api('put');
 var post = api('post');
+var del = api('delete');
 
 /*
 get(path, options)
@@ -171,7 +172,15 @@ describe('read/write device', function () {
       console.log(res.body.toString());
       assert.equal(res.statusCode, 200);
     });
-    bit('get shared devices', function () {
+    bit('drop shared device to user', function () {
+      var res = del('/user/' + user + '/shared/' + sn , {
+        json: true,
+        headers: {'Cookie': 'sid=' + token}
+      });
+      console.log(res.body.toString());
+      assert.equal(res.statusCode, 200);
+    });
+    bit('get shared devices list', function () {
       var res = get('/user/' + user + '/shared/' , {
         headers: {'Cookie': 'sid=' + token}
       });
