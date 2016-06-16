@@ -4,6 +4,9 @@ import Form from 'muicss/lib/react/form'
 import Button from 'muicss/lib/react/button'
 import Input from 'muicss/lib/react/input'
 
+let cancelId = "add-lightbulb-cancel";
+let submitId = "add-lightbulb-submit";
+
 export default React.createClass({
   contextTypes: {
     store: React.PropTypes.object

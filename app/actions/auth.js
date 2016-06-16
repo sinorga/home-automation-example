@@ -11,6 +11,8 @@ export function attemptSignup (email, password) {
         reportSignupSuccess({loginhack: true})(dispatch)
       } else if (this.status === 401) {
         reportSignupError('Invalid Credentials')(dispatch)
+      } else if (this.status === 400) {
+        reportSignupError(this.responseText)(dispatch)
       } else if (this.status === 0) {
         reportSignupError('Unable to Reach Server')(dispatch)
       } else {
@@ -103,6 +105,8 @@ export function attemptLogin (email, password) {
         }
       } else if (this.status === 401) {
         reportLoginError('Invalid Credentials')(dispatch)
+      } else if (this.status === 400) {
+        reportSignupError(this.responseText)(dispatch)
       } else if (this.status === 0) {
         reportLoginError('Unable to Reach Server')(dispatch)
       } else {

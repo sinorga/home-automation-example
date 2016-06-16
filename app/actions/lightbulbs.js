@@ -199,8 +199,12 @@ export function attemptAddLightbulb (serialnumber) {
         addLightbulbSuccess({})(dispatch)
       } else if (this.status === 401 || this.status === 403) {
         addLightbulbError('Invalid Credentials')(dispatch)
+      } else if (this.status === 409) {
+        addLightbulbError('Another user owns lightbulb ' + serialnumber)(dispatch)
       } else if (this.status === 0) {
         addLightbulbError('Unable to Reach Server')(dispatch)
+      } else if (this.status === 400) {
+        addLightbulbError(this.responseText)(dispatch)
       } else {
         addLightbulbError('Invalid Server Response Status: ' + this.status)(dispatch)
       }
@@ -301,6 +305,7 @@ function addLightbulbSuccess (status) {
 }
 
 function addLightbulbError (error) {
+  console.log('Adding error', error);
   return (dispatch, getState) => {
     dispatch({
       type: 'ADD_LIGHTBULBS_ERROR',

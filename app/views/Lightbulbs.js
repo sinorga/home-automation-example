@@ -36,22 +36,16 @@ export default React.createClass({
   },
 
   showLightbulbModal() {
-    console.log("in showLightbulbModal");
     this.setState({lightbulbModalOpen: true});
   },
 
   closeLightbulbModal() {
-    console.log("in closeLightbulbModal");
     this.setState({lightbulbModalOpen: false});
   },
 
   handleAddLightbulb(request) {
     attemptAddLightbulb(request.sn)(this.context.store.dispatch, this.context.store.getState)
     this.closeLightbulbModal();
-  },
-
-  loadLightbulb(arg) {
-    console.log('in loadLightbulb. arg: ', arg.target);
   },
 
   /**
@@ -129,15 +123,17 @@ export default React.createClass({
       : <Spinner style={{visibility: "hidden"}} />
     )
 
+    let lightbulbs_error = this.context.store.getState().lightbulbs.error
+    console.log('lightbulbs_error', lightbulbs_error);
     let error_message = (
-      this.context.store.getState().auth.error == null
+      lightbulbs_error == null
       ? <div></div>
-      : <div className='messagebox error'>{this.context.store.getState().auth.error}</div>
+      : <div className='messagebox error'>{lightbulbs_error}</div>
     );
 
     let info_message_when_none = (
       this.context.store.getState().lightbulbs.statuses.length === 0
-      ? <div className='messagebox info'>You do not have any lightbulbs, you can add one below.</div>
+      ? <div className='messagebox info'>You do not have any lightbulbs. <a href="javascript: void(0);" onMouseDown={this.showLightbulbModal}>+ New Lightbulb</a></div>
       : <div></div>
     );
 
@@ -155,21 +151,6 @@ export default React.createClass({
       marginBottom:30
     };
 
-    const actions = [
-      <FlatButton
-        label="Cancel"
-        secondary={true}
-        onTouchTap={this.closeLightbulbModal}
-        />,
-
-      <FlatButton
-        label="Submit"
-        primary={true}
-        disabled={true}
-        onTouchTap={this.handleAddLightbulb}
-        />
-    ];
-
     const logoutButton = (
       <FlatButton label="LOGOUT"
                   primary={true}
@@ -186,7 +167,7 @@ export default React.createClass({
                 showMenuIconButton={false}  />
 
         <div className='masthead'>
-          <p className='headline'>My Home {spinner_when_waiting}</p>
+          <div className='headline'>My Home {spinner_when_waiting}</div>
           <FloatingActionButton
             onMouseDown={this.showLightbulbModal}
             backgroundColor={ '#FF921E' }

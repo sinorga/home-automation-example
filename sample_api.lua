@@ -8,10 +8,10 @@ if ret.status_code ~= nil then
   response.code = ret.status_code
   response.message = ret.message
 else
-  local domain = string.gsub(request.uri, '(https?://.-/)(.*)', '%1')
+  local domain = string.gsub(request.uri, 'https?://(.-/)(.*)', '%1')
   local text = "Hi " .. request.parameters.email .. ",\n"
   text = text .. "Click this link to verify your account:\n"
-  text = text .. domain .. "verify/" .. ret;
+  text = text .. "https://" .. domain .. "verify/" .. ret;
   Email.send({
     from = 'Sample App <mail@exosite.com>',
     to = request.parameters.email,
@@ -86,7 +86,9 @@ if link == true then
         }}
       }}
     })
-    return {"ok", resp}
+    response.code = resp.status_code
+    response.message = resp.message
+    return
   else
     response.message = "Conflict"
     response.code = 409
