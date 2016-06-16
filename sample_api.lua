@@ -298,37 +298,32 @@ local req_alert = {
   message = request.body.message,
   timer_running = false
 }
-if value.state == request.body.state then -- check condition
+function trigger(alert, timerid)
+  Timer.sendAfter({
+    message = alert.message,
+    duration = alert.timer * 60 * 1000,
+    timer_id = timerid
+  })
+  alert.timer_running = true
+  alert.timer_id = timerid
+end
+if value.state ~= nil and value.state == request.body.state then -- condition true
+  local timerid = sn .. "_state"
   if value.alerts ~= nil then
     for _ ,alert in ipairs(value.alerts) do
-      if request.body.active then
-        if not alert.timer_running then --enable but not running
-          local tid = sn .. "_state"
-          Timer.sendAfter({
-            message = req_alert.message,
-            duration = req_alert.timer * 60 * 1000,
-            timer_id = tid,
-            soltion_id = ""
-          })
-          req_alert.timer_running = true
-          req_alert.timer_id = tid
+      if request.body.active then --enabled
+        if not alert.timer_running then --not running
+          trigger(req_alert, timerid)
         end
-      else
-        if alert.timer_running then --disable but running
+      else --disabled
+        if alert.timer_running then --running
           Timer.cancel({timer_id = alert.timer_id})
         end
       end
     end
-  else -- no exist alert
+  else -- no existing alert
     if request.body.active then
-      Timer.sendAfter({
-        message = req_alert.message,
-        duration = req_alert.timer * 60 * 1000,
-        timer_id = tid,
-        soltion_id = ""
-      })
-      req_alert.timer_running = true
-      req_alert.timer_id = tid
+      trigger(req_alert, timerid)
     end
   end
 end

@@ -59,6 +59,7 @@ describe('User', function () {
       json: {password: passw}
     });
 
+    console.log(res.body.toString());
     assert.equal(res.statusCode, 200);
   });
 
@@ -83,7 +84,7 @@ describe('User', function () {
     var res = post('/session', {
       json: {email: user, password: passw}
     });
-
+    console.log(res.body.toString());
     assert.equal(res.statusCode, 200);
   });
 });

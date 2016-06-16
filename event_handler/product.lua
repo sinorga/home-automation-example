@@ -38,4 +38,32 @@ value[data.alias] = data.value[2]
 value["timestamp"] = data.timestamp/1000
 value["pid"] = data.vendor or data.pid
 value["ip"] = data.source_ip
+
+if value.alerts ~= nil then
+  local timerid = sn .. "_" .. data.alias
+  for _, alert in ipairs(value["alerts"]) do
+    if alert.active then -- enabled
+      if alert.state == value.state then -- alert condition true
+        if not alert.timer_running then -- not running
+          Timer.sendAfter({
+            message = alert.message,
+            duration = alert.timer * 60 * 1000,
+            timer_id = timerid
+          })
+          alert.timer_running = true
+        end
+      else -- alert condition false
+        if alert.timer_running then -- running
+          Timer.cancel({timer_id = timerid})
+          alert.timer_running = false
+        end
+      end
+    else -- disabled
+      if alert.timer_running then -- running
+        Timer.cancel({timer_id = timerid})
+        alert.timer_running = false
+      end
+    end
+  end
+end
 kv_write(data.device_sn, value)
