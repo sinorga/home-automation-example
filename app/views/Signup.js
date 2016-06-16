@@ -65,7 +65,7 @@ export default React.createClass({
 
     return (
       <div>
-        <AppBar style={ appBarStyle } showMenuIconButton={false} iconElementRight={ <RaisedButton linkButton={true} href="/login" label="LOGIN" primary={true} /> } />
+        <AppBar style={ appBarStyle } showMenuIconButton={false} iconElementRight={ <RaisedButton linkButton={true} onClick={() => { browserHistory.push('/') }} label="LOGIN" primary={true} /> } />
 
         <Container>
           <div className='logo-container'>
