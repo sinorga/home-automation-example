@@ -14,6 +14,7 @@ export function requestShares (auth) {
     })
 
     var oReq = new window.XMLHttpRequest()
+    oReq.withCredentials = true;
     oReq.open('DELETE', 'http://127.0.0.1:3000/api/v1/sessions/_')
     oReq.setRequestHeader('Token', '')
     oReq.send()
@@ -88,6 +89,7 @@ export function attemptToggleLightbulbState (serialnumber) {
     }
 
     var oReq = new window.XMLHttpRequest()
+    oReq.withCredentials = true;
     oReq.addEventListener('load', toggleLightbulbResonseHandler)
     oReq.addEventListener('error', toggleLightbulbResonseHandler)
     oReq.open('POST', API_BASE_URL + '/lightbulb/'+serialnumber)
@@ -149,6 +151,7 @@ export function requestLightbulbs () {
     email = email || window.sessionStorage.getItem('email')
 
     var oReq = new window.XMLHttpRequest()
+    oReq.withCredentials = true;
     oReq.addEventListener('load', requestLightbulbsResponseHandler)
     oReq.addEventListener('error', requestLightbulbsResponseHandler)
     oReq.open('GET', API_BASE_URL + '/user/'+email+'/lightbulbs')
@@ -209,6 +212,7 @@ export function attemptAddLightbulb (serialnumber) {
     }
 
     var oReq = new window.XMLHttpRequest()
+    oReq.withCredentials = true;
     oReq.addEventListener('load', toggleLightbulbResonseHandler)
     oReq.addEventListener('error', toggleLightbulbResonseHandler)
     oReq.open('POST', API_BASE_URL + '/user/' + email + '/lightbulbs')
@@ -257,6 +261,7 @@ export function attemptAddLightbulb (serialnumber) {
     }
 
     var oReq = new window.XMLHttpRequest()
+    oReq.withCredentials = true;
     oReq.addEventListener('load', deleteLightbulbResonseHandler)
     oReq.addEventListener('error', deleteLightbulbResonseHandler)
     oReq.open('POST', API_BASE_URL + '/user/' + email + '/lightbulbs')

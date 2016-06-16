@@ -23,7 +23,7 @@ end
 local ret = User.activateUser({code = request.parameters.code})
 if ret ~= nil and ret.status_code ~= nil then
   response.code = ret.status_code
-  if response.code == 200 then 
+  if response.code == 200 then
     response.message = 'Signed up successfully.'
   else
     response.message = 'Sign up failed. Error: ' .. ret.message
@@ -130,11 +130,9 @@ else
   response.code = 409
 end
 --#ENDPOINT GET /user/{email}/lightbulbs
-local dataports = {"state", "temperature", "hours"};
 local user = currentUser(request)
 if user ~= nil then
   local list = {}
-  local obj = {}
   local roles = User.listUserRoles({id = user.id})
   for _, role in ipairs(roles) do
     for _, parameter in ipairs(role.parameters) do
@@ -171,8 +169,7 @@ if user ~= nil then
     parameter_name = "sn",
     parameter_value = sn
   })
-  response.message = isowner
-  if isowner then
+  if 'OK' == isowner then
     local guest = User.listUsers({filter = "email::like::" .. request.parameters.email})
     if #guest == 1 and guest[1].id ~= nil then
       local resp = User.assignUser({
@@ -193,66 +190,150 @@ if user ~= nil then
 end
 http_error(403, response)
 --#ENDPOINT DELETE /user/{email}/shared/{sn}
-local sn = request.body.serialnumber
+local sn = request.parameters.sn
 local user = currentUser(request)
 if user ~= nil then
-  local isowner = User.checkUserRole({id = user.id, role_id = "owner", parameters = {
-    name = "owner",
-    value = sn
-  }})
-  if isowner then
-    local guest = User.findUserByEmail({email = request.parameters.email})
-    if guest ~= nil and guest.id ~= nil then
-      User.deassignUserParam({id = guest.id, role_id = "guest", parameters = {{name = "sn", value = sn}}})
+  local isowner = User.hasUserRoleParam({
+    id = user.id, role_id = "owner", parameter_name = "sn", parameter_value = sn
+  })
+  if isowner == 'OK' then
+    local guestusers = User.listRoleParamUsers({
+      role_id = "guest", parameter_name = "sn", parameter_value = sn
+    })
+    if guestusers ~= nil then
+      for _, guestid in ipairs(guestusers) do
+        local guest = User.getUser({id=guestid})
+        if guest.email == request.parameters.email then
+          local result = User.deassignUserParam({
+            id = guest.id, role_id = "guest", parameter_name = "sn", parameter_value = sn
+          })
+          return result
+        end
+      end
     end
   end
 end
 http_error(403, response)
 --#ENDPOINT GET /user/{email}/shared/
---[[return users.getMe(token).then(function(me) {
-    if (me.email != parameters.email) {
-        return respond('Permission denied', 403);
-    } else {
-        return users.getAssignedRoles(me.id);
-    }
-}).filter(function(role) {
-    return role.parameter && role.role_id == 'owner';
-}).map(function(role) {
-    return promise.props({
-        'serialnumber': role.parameter,
-        'email': users.getAssignedUsers('guest', role.parameter).map(function(id) {
-            return users.getUser(id)
-        }).map(function(user) {
-            return user.email;
-        })
-    });
-}).all().then(function(sns) {
-    var results = [];
-    for (var i = 0; i < sns.length; i++) {
-        var device = sns[i];
-        for (var j = 0; j < device.email.length; j++) {
-            results.push({
-                'serialnumber': device.serialnumber,
-                'type': 'guest',
-                'email': device.email[j]
-            });
-        }
-    }
-    return results;
-});]]
---#ENDPOINT POST /lightbulb/{sn}
-local sn = tostring(request.parameters.sn)
-for _, alias in ipairs({"state", "hours", "temperature"}) do
-  if request.body[alias] ~= nil then
-    response.message = write(sn, alias, request.body[alias])
+local user = currentUser(request)
+if user ~= nil then
+  if user.email ~= request.parameters.email then
+    http_error(403, response)
+  else
+    local roles = User.listUserRoles({id=user.id})
+    local list = {}
+    for _, role in ipairs(roles) do
+      if role.role_id == "owner" then
+        for _, parameter in ipairs(role.parameters) do
+          if parameter.name == "sn" then
+            local sn = parameter.value
+            local user_info = {serialnumber=sn, email=user.email, type="full"}
+            table.insert(list, user_info)
+            local guestusers = User.listRoleParamUsers({
+              role_id = "guest", parameter_name = "sn", parameter_value = parameter.value
+            })
+            if guestusers ~= nil then
+              for _, guestid in ipairs(guestusers) do
+                local guest = User.getUser({id=guestid})
+                local guest_info = {serialnumber=sn, email=guest.email, type="readonly"}
+                table.insert(list, guest_info)
+              end
+            end
+          end
+        end
+      end
+    end
+    return list
   end
 end
+http_error(403, response)
+--#ENDPOINT POST /lightbulb/{sn}
+local sn = tostring(request.parameters.sn)
+local user = currentUser(request)
+if user ~= nil then
+  local isowner = User.hasUserRoleParam({
+    id = user.id, role_id = "owner", parameter_name = "sn", parameter_value = sn
+  })
+  if isowner == 'OK' then
+    for _, alias in ipairs({"state", "hours", "temperature"}) do
+      if request.body[alias] ~= nil then
+        local result = write(sn, alias, request.body[alias])
+      end
+    end
+    response.code = 200
+  else
+    http_error(403, response)
+  end
+else
+  http_error(403, response)
+end
+
 --#ENDPOINT GET /lightbulb/{sn}
 local sn = tostring(request.parameters.sn)
-if sn ~= nil then
-  return kv_read(sn)
+local user = currentUser(request)
+if user ~= nil then
+  local isowner = User.hasUserRoleParam({
+    id = user.id, role_id = "owner", parameter_name = "sn", parameter_value = sn
+  })
+  local isguest = User.hasUserRoleParam({
+    id = user.id, role_id = "guest", parameter_name = "sn", parameter_value = sn
+  })
+  if isowner == 'OK' or isguest == 'OK' then
+    return kv_read(sn)
+  else
+    http_error(403, response)
+  end
+else
+  http_error(403, response)
 end
-http_error(404, response)
+--#ENDPOINT POST /lightbulb/{sn}/alert
+--{state:on, timer:5, email:user, active:true, message=""}
+local sn = request.parameters.sn
+local value = kv_read(sn)
+local req_alert = {
+  state = request.body.state,
+  timer = request.body.timer,
+  active = request.body.active,
+  email = request.body.email,
+  message = request.body.message,
+  timer_running = false
+}
+if value.state == request.body.state then -- check condition
+  if value.alerts ~= nil then
+    for _ ,alert in ipairs(value.alerts) do
+      if request.body.active then
+        if not alert.timer_running then --enable but not running
+          local tid = sn .. "_state"
+          Timer.sendAfter({
+            message = req_alert.message,
+            duration = req_alert.timer * 60 * 1000,
+            timer_id = tid,
+            soltion_id = ""
+          })
+          req_alert.timer_running = true
+          req_alert.timer_id = tid
+        end
+      else
+        if alert.timer_running then --disable but running
+          Timer.cancel({timer_id = alert.timer_id})
+        end
+      end
+    end
+  else -- no exist alert
+    if request.body.active then
+      Timer.sendAfter({
+        message = req_alert.message,
+        duration = req_alert.timer * 60 * 1000,
+        timer_id = tid,
+        soltion_id = ""
+      })
+      req_alert.timer_running = true
+      req_alert.timer_id = tid
+    end
+  end
+end
+value.alerts = {req_alert}
+kv_write(sn, value)
 --#ENDPOINT GET /debug/{cmd}
 response.message = debug(request.parameters.cmd)
 --#ENDPOINT WEBSOCKET /debug

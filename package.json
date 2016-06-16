@@ -1,7 +1,7 @@
 {
-  "name": "sphinx-example",
+  "name": "home-automation-example",
   "version": "0.0.1",
-  "description": "A simple demonstration of using Exosite's {Sphinx} system.",
+  "description": "A simple demonstration of using Exosite's Murano.",
   "main": "index.js",
   "semistandard": {
     "globals": [

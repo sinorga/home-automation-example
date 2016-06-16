@@ -73,7 +73,7 @@ function getTestingState () {
 }
 
 function reducer (state, action) {
-  if (state === undefined) { return getTestingState() }
+  if (state === undefined) { return getInitialState() }
 
   switch (action.type) {
     case 'ATTEMPT_REQUEST_STATES':
