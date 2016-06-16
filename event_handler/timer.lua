@@ -16,7 +16,7 @@ if start ~= nil then
   local sn = string.sub(request.timer_id, 1, start-1)
   local value = kv_read(sn)
   if value.alerts ~= nil then
-    local alert = value.alerts[0]
+    local alert = value.alerts[1]
     local sbj = "Alert for device " .. sn .. ", state " .. alert.state
     Email.send({to = alert.email, text = alert.message, subject = sbj})
   end
