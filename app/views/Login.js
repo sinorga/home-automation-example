@@ -47,6 +47,10 @@ export default React.createClass({
   componentWillUnmount() {
     if (typeof this.unsubscribe == "function") { this.unsubscribe() }
   },
+  
+  goToSignup() {
+    asdf
+  }, 
 
   render () {
     let spinner_when_waiting = (
@@ -68,7 +72,7 @@ export default React.createClass({
 
     return (
       <div>
-        <AppBar style={ appBarStyle } showMenuIconButton={false} iconElementRight={ <RaisedButton linkButton={true} href="/signup" label="SIGNUP" primary={true} /> } />
+        <AppBar style={ appBarStyle } showMenuIconButton={false} iconElementRight={ <RaisedButton linkButton={true} onClick={() => { browserHistory.push('/signup') }} label="SIGNUP" primary={true} /> } />
 
         <Container>
           <div className='logo-container'>
