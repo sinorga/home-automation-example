@@ -288,7 +288,16 @@ else
 end
 --#ENDPOINT POST /lightbulb/{sn}/alert
 --{state:on, timer:5, email:user, active:true, message=""}
+if not (
+  request.body.state and request.body.timer and
+  request.body.active and request.body.email and
+  request.body.message
+) then
+  http_error(400, response)
+  return
+end
 local sn = request.parameters.sn
+local timerid = sn .. "_state"
 local value = kv_read(sn)
 local req_alert = {
   state = request.body.state,
@@ -298,27 +307,14 @@ local req_alert = {
   message = request.body.message,
   timer_running = false
 }
-function trigger(alert, timerid)
-  Timer.sendAfter({
-    message = alert.message,
-    duration = alert.timer * 60 * 1000,
-    timer_id = timerid
-  })
-  alert.timer_running = true
-  alert.timer_id = timerid
-end
 if value.state ~= nil and value.state == request.body.state then -- condition true
-  local timerid = sn .. "_state"
   if value.alerts ~= nil then
     for _ ,alert in ipairs(value.alerts) do
-      if request.body.active then --enabled
-        if not alert.timer_running then --not running
-          trigger(req_alert, timerid)
-        end
-      else --disabled
-        if alert.timer_running then --running
-          Timer.cancel({timer_id = alert.timer_id})
-        end
+      if request.body.active and not alert.timer_running then --enabled, not running
+        trigger(req_alert, timerid)
+      end
+      if not request.body.active and alert.timer_running then --disabled, running
+        cancel_trigger(alert)
       end
     end
   else -- no existing alert

@@ -65,6 +65,11 @@ function write(sn, alias, value)
 end
 
 http_error_codes = {
+  [400] = {
+    code = 400,
+    message = "Bad Request",
+    headers = {}
+  },
   [403] = {
     code = 403,
     message = "Permission Denied",
@@ -81,4 +86,19 @@ function http_error(code, response)
   for key, value in pairs(http_error_codes[code]) do
     response[key] = value
   end
+end
+
+function trigger(alert, timerid)
+  Timer.sendAfter({
+    message = alert.message,
+    duration = alert.timer * 60 * 1000,
+    timer_id = timerid
+  })
+  alert.timer_running = true
+  alert.timer_id = timerid
+end
+
+function cancel_trigger(alert)
+  Timer.cancel({timer_id = alert.timer_id})
+  alert.timer_running = false
 end
