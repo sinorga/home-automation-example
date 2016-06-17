@@ -198,6 +198,8 @@ export function attemptAddLightbulb (serialnumber) {
     function toggleLightbulbResonseHandler () {
       if (this.status === 200) {
         addLightbulbSuccess({})(dispatch)
+        console.log('requesting lightbulbs...');
+        requestLightbulbs()(dispatch, getState);
       } else if (this.status === 401 || this.status === 403) {
         // TODO: should log out here
         addLightbulbError('Invalid Credentials')(dispatch)
