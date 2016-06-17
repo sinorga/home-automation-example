@@ -18,6 +18,8 @@ if start ~= nil then
   if value.alerts ~= nil then
     local alert = value.alerts[1]
     local sbj = "Alert for device " .. sn .. ", state " .. alert.state
-    Email.send({to = alert.email, text = alert.message, subject = sbj})
+    Email.send({to = alert.email, from = "noreply@exosite.com", text = alert.message, subject = sbj})
+    alert.timer_running = false
+    kv_write(sn, value)
   end
 end
