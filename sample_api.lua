@@ -299,6 +299,21 @@ for _, alert in ipairs(alerts) do
   alert.timer_running = nil
 end
 return to_json(alerts)
+--#ENDPOINT DELETE /lightbulb/{sn}/alert
+local sn = request.parameters.sn
+if not (request.body.state and request.body.timer) then
+  http_error(400, response)
+  return
+end
+local value = kv_read(sn)
+if value.alerts ~= nil then
+  local alert = value.alerts[1]
+  if request.body.state == alert.state and request.body.timer == alert.timer then
+    value.alerts[1] = nil
+  end
+end
+kv_write(sn, value)
+response.code = 204
 --#ENDPOINT POST /lightbulb/{sn}/alert
 --{state:on, timer:5, email:user, active:true, message=""}
 if not (
