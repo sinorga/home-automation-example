@@ -11,27 +11,26 @@ Using This Example
 Clone this repository, and then build the application:
 
 ```
-npm install
-npm run compile
+git clone git@github.com:exosite/home-automation-example.git
+cd home-automation-example
 ```
 
-To deploy, first install the exosite command line tool.
-
-
-```
-sudo pip install exosite
-```
-
-Initialize the project with your solution and product id.
+To deploy, first install the [exosite command line tool](http://beta-docs.exosite.com/murano/exosite-cli/). Then initialize the project with your solution and product id.
 
 ````
 exosite --init
 ```
 
-Then deploy this sample application into your solution:
+Then deploy this sample application into your solution.
 
 ```
 exosite --deploy
+```
+
+To build the application, install build tools using `npm install` and then compile the application.
+
+```
+npm run compile
 ```
 
 To run the web application static assets locally, create a .env file in the root of the project with your solution URL, like this:
