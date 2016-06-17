@@ -98,11 +98,10 @@ let LightbulbsView = React.createClass({
     //// TODO: replace all these calls with redux-thunk
     requestLightbulbs()(this.context.store.dispatch, this.context.store.getState)
 
-    //
-    //this.pollInterval = 1000
-    //
-    //this.updateStatuses()
-    //
+    
+    this.pollInterval = 1000
+    this.updateStatuses()
+
     //window.addEventListener("blur", this.onblur)
     //window.addEventListener("focus", this.onfocus)
   },
@@ -116,16 +115,16 @@ let LightbulbsView = React.createClass({
   //  this.updateStatuses()
   //},
 
-  //updateStatuses () {
-  //  let state = this.context.store.getState()
-  //  if (state.lightbulbs.isFetching == false) {
-  //    requestLightbulbs()(this.context.store.dispatch, this.context.store.getState)
-  //  }
-  //
-  //  this.pollTimer = window.setTimeout(() => {
-  //    this.updateStatuses()
-  //  }, this.pollInterval)
-  //},
+  updateStatuses () {
+    let state = this.context.store.getState()
+    if (state.lightbulbs.isFetching == false) {
+      requestLightbulbs()(this.context.store.dispatch, this.context.store.getState)
+    }
+  
+   this.pollTimer = window.setTimeout(() => {
+     this.updateStatuses()
+   }, this.pollInterval)
+  },
 
   componentWillUnmount() {
     if (typeof this.unsubscribe == "function") { this.unsubscribe() }
@@ -138,7 +137,7 @@ let LightbulbsView = React.createClass({
     error: PropTypes.string,
     lightbulbs: PropTypes.arrayOf(PropTypes.shape({
       serialnumber: PropTypes.string.isRequired,
-      state: PropTypes.string.isRequired
+      state: PropTypes.number.isRequired
     }))
   },
   getDefaultProps() {
@@ -213,14 +212,20 @@ let LightbulbsView = React.createClass({
           {info_message_when_none}
           <List>
           {state.lightbulbs.statuses.sort((a,b) => a.serialnumber > b.serialnumber).map( (m,i) => {
-            const link = `/lightbulbs/${m.serialnumber}`;
+            const link = function(e) {
+              // TODO: fix when I fix routing
+              let sn = e.target.innerHTML;
+              browserHistory.push('/lightbulbs/' + sn)
+              //`/lightbulbs/${m.serialnumber}`;
+            }
             return (
-                  <Link to={link} key={i}>
+                  <a onClick={link} key={i}>
                     <ListItem leftAvatar={<Avatar icon={<LightbulbIcon />} backgroundColor={ m.state === 'on' ? Colors.yellow600 : Colors.grey300} />}
                               primaryText={m.name}
-                              secondaryText={m.serialnumber} />
+                              secondaryText={m.serialnumber} 
+                              className="bulb-list-item" />
                       <Divider />
-                  </Link>
+                  </a>
                 )
             })}
           </List>

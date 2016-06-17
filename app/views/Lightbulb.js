@@ -111,7 +111,11 @@ export default React.createClass({
       top: 16
     };
 
-    let shares = state.lightbulbs.shares.filter(v => v.serialnumber == this.props.params.sn);
+    let shares = [];
+    let alerts = [];
+    let sharesList = [];
+    let alertsList = [];
+    /* let shares = state.lightbulbs.shares.filter(v => v.serialnumber == this.props.params.sn);
     let sharesList = (
       (shares.length > 0) ?
         shares.map((v) => {
@@ -135,7 +139,7 @@ export default React.createClass({
         }) :
         ( <ListItem primaryText="No alerts created." /> )
     );
-
+    */
     const rightIconMenu = (
       <IconMenu
         iconButtonElement={<IconButton><MoreVertIcon color={Colors.grey400} /></IconButton>}
@@ -158,7 +162,7 @@ export default React.createClass({
 
         <div className="nav-bar">
           <RaisedButton linkButton={true}
-                        href="/lightbulbs"
+                        onClick={() => { browserHistory.push('/lightbulbs') }}
                         style={{ maxWidth: 45 }}
                         primary={true}
                         icon={ (<span className="home-icon"><ChevronLeft color={ '#ffffff' } /><ActionHome color={ '#ffffff' } /></span>)}/>
