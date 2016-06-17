@@ -150,7 +150,11 @@ if user ~= nil then
       end
     end
   end
-  return list
+  if table.getn(list) == 0 then
+    return '[]'
+  else
+    return list
+  end
 else
   http_error(403, response)
 end
