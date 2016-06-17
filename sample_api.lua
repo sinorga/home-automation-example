@@ -288,6 +288,17 @@ if user ~= nil then
 else
   http_error(403, response)
 end
+--#ENDPOINT GET /lightbulb/{sn}/alert
+local alerts = {}
+local value = kv_read(request.parameters.sn)
+if value.alerts ~= nil then
+  alerts = value.alerts
+end
+for _, alert in ipairs(alerts) do
+  alert.timer_id = nil
+  alert.timer_running = nil
+end
+return to_json(alerts)
 --#ENDPOINT POST /lightbulb/{sn}/alert
 --{state:on, timer:5, email:user, active:true, message=""}
 if not (
