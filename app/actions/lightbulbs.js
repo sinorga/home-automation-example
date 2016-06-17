@@ -161,11 +161,12 @@ export function requestLightbulbs () {
   }
 }
 
-function requestLightbulbsSuccess (statues) {
+function requestLightbulbsSuccess (statuses) {
+  console.log('requestLightbulbsSuccess', statuses);
   return (dispatch) => {
     dispatch({
       type: 'REQUEST_LIGHTBULBS_SUCCESS',
-      statuses: statues
+      statuses: statuses 
     })
   }
 }
@@ -198,6 +199,7 @@ export function attemptAddLightbulb (serialnumber) {
       if (this.status === 200) {
         addLightbulbSuccess({})(dispatch)
       } else if (this.status === 401 || this.status === 403) {
+        // TODO: should log out here
         addLightbulbError('Invalid Credentials')(dispatch)
       } else if (this.status === 409) {
         addLightbulbError('Another user owns lightbulb ' + serialnumber)(dispatch)
@@ -298,17 +300,16 @@ function deleteLightbulbError (error) {
 function addLightbulbSuccess (status) {
   return (dispatch) => {
     dispatch({
-      type: 'ADD_LIGHTBULBS_SUCCESS',
+      type: 'ADD_LIGHTBULB_SUCCESS',
       status: status
     })
   }
 }
 
 function addLightbulbError (error) {
-  console.log('Adding error', error);
   return (dispatch, getState) => {
     dispatch({
-      type: 'ADD_LIGHTBULBS_ERROR',
+      type: 'ADD_LIGHTBULB_ERROR',
       error: error
     })
   }

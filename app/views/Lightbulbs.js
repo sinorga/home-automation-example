@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { PropTypes } from 'react'
 import ReactDOM from 'react-dom';
 import { browserHistory } from 'react-router'
 import { Link } from 'react-router'
@@ -8,6 +8,8 @@ import AddLightbulbForm from '../components/add_lightbulb_form'
 import { attemptToggleLightbulbState, attemptAddLightbulb, requestLightbulbs } from '../actions/lightbulbs'
 import Container from 'muicss/lib/react/container';
 import { logout } from '../actions/auth'
+import { connect } from 'react-redux'
+
 
 import ContentAdd from 'material-ui/lib/svg-icons/content/add';
 import AppBar from 'material-ui/lib/app-bar';
@@ -23,7 +25,23 @@ import RaisedButton from 'material-ui/lib/raised-button';
 import FlatButton from 'material-ui/lib/flat-button';
 import Dialog from 'material-ui/lib/dialog';
 
-export default React.createClass({
+// Test 
+import { bindActionCreators } from 'redux'
+
+function mapStateToProps(state) {
+  return { 
+    error: state.lightbulbs.error,
+    statuses: state.lightbulbs.statuses
+  }
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(
+    { attemptToggleLightbulbState, attemptAddLightbulb, requestLightbulbs }, 
+    dispatch)
+}
+
+let LightbulbsView = React.createClass({
 
   contextTypes: {
     store: React.PropTypes.object
@@ -78,7 +96,8 @@ export default React.createClass({
     //})
     //
     //// TODO: replace all these calls with redux-thunk
-    //requestLightbulbs()(this.context.store.dispatch, this.context.store.getState)
+    requestLightbulbs()(this.context.store.dispatch, this.context.store.getState)
+
     //
     //this.pollInterval = 1000
     //
@@ -115,7 +134,19 @@ export default React.createClass({
     window.removeEventListener("blur", this.onblur)
     window.removeEventListener("focus", this.onfocus)
   },
-
+  propTypes: {
+    error: PropTypes.string,
+    lightbulbs: PropTypes.arrayOf(PropTypes.shape({
+      serialnumber: PropTypes.string.isRequired,
+      state: PropTypes.string.isRequired
+    }))
+  },
+  getDefaultProps() {
+    return {
+      error: '',
+      statuses: []
+    }
+  },
   render() {
     let spinner_when_waiting = (
       this.context.store.getState().lightbulbs.isFetching && this.context.store.getState().lightbulbs.statuses.length == 0
@@ -123,8 +154,8 @@ export default React.createClass({
       : <Spinner style={{visibility: "hidden"}} />
     )
 
-    let lightbulbs_error = this.context.store.getState().lightbulbs.error
-    console.log('lightbulbs_error', lightbulbs_error);
+    let lightbulbs_error = this.props.error; // this.context.store.getState().lightbulbs.error
+    console.log('lightbulbs_error during render() is:', lightbulbs_error);
     let error_message = (
       lightbulbs_error == null
       ? <div></div>
@@ -209,6 +240,8 @@ export default React.createClass({
   }
 })
 
+
+export default connect(mapStateToProps, mapDispatchToProps)(LightbulbsView);
 
 
 //const rightIconMenu = (

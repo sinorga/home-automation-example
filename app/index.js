@@ -3,7 +3,6 @@ import { render } from 'react-dom'
 import { Router, Route, browserHistory, IndexRoute } from 'react-router'
 
 import App from './views/App'
-import Home from './views/Home'
 import Login from './views/Login'
 import Logout from './views/Logout'
 import Signup from './views/Signup'

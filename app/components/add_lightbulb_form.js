@@ -12,6 +12,7 @@ export default React.createClass({
   handleForm (event) {
       event.preventDefault()
 
+      console.log('handleForm', event.target.elements[0].value);
       const sn = event.target.elements[0].value
       let request = {
         sn: sn
