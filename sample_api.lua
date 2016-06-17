@@ -308,8 +308,8 @@ end
 local value = kv_read(sn)
 if value.alerts ~= nil then
   local alert = value.alerts[1]
-  if request.body.state == alert.state and request.body.timer == alert.timer then
-    value.alerts[1] = nil
+  if alert ~= nil and request.body.state == alert.state and request.body.timer == alert.timer then
+    alert = nil
   end
 end
 kv_write(sn, value)
