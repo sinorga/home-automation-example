@@ -7,25 +7,14 @@ This application is written as a React app with Murano Solution event handlers, 
 Using This Example
 ------------------
 
-
-Clone this repository, and then build the application:
+Clone this repository.
 
 ```
 git clone git@github.com:exosite/home-automation-example.git
 cd home-automation-example
 ```
 
-To deploy, first install the [exosite command line tool](http://beta-docs.exosite.com/murano/exosite-cli/). Then initialize the project with your solution and product id.
-
-````
-exosite --init
-```
-
-Then deploy this sample application into your solution.
-
-```
-exosite --deploy
-```
+To deploy the application, first install the [exosite command line tool](http://beta-docs.exosite.com/murano/exosite-cli/). Then initialize the project with your solution and product id using the `--init` option and deploy with `--deploy`.
 
 To build the application, install build tools using `npm install` and then compile the application.
 
