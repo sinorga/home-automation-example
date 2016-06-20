@@ -7,7 +7,7 @@
     "type": "git",
     "url": "git://github.com/exosite/home-automation-example.git"
   },
-  "license" : "MIT",
+  "license" : "Apache-2.0",
   "semistandard": {
     "globals": [
       "describe",
