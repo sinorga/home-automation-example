@@ -5,9 +5,9 @@ import Form from 'muicss/lib/react/form'
 import Button from 'muicss/lib/react/button'
 import Input from 'muicss/lib/react/input'
 import Spinner from '../components/spinner'
-import ShareLightbulbForm from '../components/share_lightbulb_form'
+import ShareLightbulbForm from '../components/ShareLightbulbForm'
 import { toggleLightbulbState, attemptShare, attemptDeleteLightbulb } from '../actions/lightbulbs'
-import NavBar from '../components/nav_bar'
+import NavBar from '../components/NavBar'
 
 import IconButton from 'material-ui/lib/icon-button';
 import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';

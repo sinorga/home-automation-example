@@ -3,7 +3,7 @@ import Form from 'muicss/lib/react/form'
 import Button from 'muicss/lib/react/button'
 import Input from 'muicss/lib/react/input'
 
-import Spinner from '../components/spinner'
+import Spinner from '../components/Spinner'
 
 export default React.createClass({
   handleForm (event) {

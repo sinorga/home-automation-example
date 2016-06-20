@@ -3,12 +3,12 @@ import ReactDOM from 'react-dom';
 import { browserHistory } from 'react-router'
 import { Link } from 'react-router'
 import FloatingActionButton from 'material-ui/lib/floating-action-button';
-import Spinner from '../components/spinner'
-import AddLightbulbForm from '../components/add_lightbulb_form'
+import Spinner from '../components/Spinner'
+import AddLightbulbForm from '../components/AddLightbulbForm'
 import { attemptToggleLightbulbState, attemptAddLightbulb, requestLightbulbs } from '../actions/lightbulbs'
 import Container from 'muicss/lib/react/container';
 import { connect } from 'react-redux'
-import NavBar from '../components/nav_bar'
+import NavBar from '../components/NavBar'
 
 import ContentAdd from 'material-ui/lib/svg-icons/content/add';
 import List from 'material-ui/lib/lists/list';

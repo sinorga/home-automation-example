@@ -7,7 +7,7 @@ import Button from 'muicss/lib/react/button'
 import Input from 'muicss/lib/react/input'
 
 import TextField from 'material-ui/lib/text-field';
-import Spinner from '../components/spinner';
+import Spinner from '../components/Spinner';
 import { attemptLogin, clearAuthError } from '../actions/auth'
 import AppBar from 'material-ui/lib/app-bar';
 import RaisedButton from 'material-ui/lib/raised-button';
