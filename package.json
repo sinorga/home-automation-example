@@ -3,6 +3,11 @@
   "version": "0.0.1",
   "description": "A simple demonstration of using Exosite's Murano.",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/exosite/home-automation-example.git"
+  },
+  "license" : "MIT",
   "semistandard": {
     "globals": [
       "describe",
