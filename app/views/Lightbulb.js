@@ -1,10 +1,10 @@
 import React from 'react'
-import { browserHistory } from 'react-router'
+import { hashHistory } from 'react-router'
 import { Link } from 'react-router'
 import Form from 'muicss/lib/react/form'
 import Button from 'muicss/lib/react/button'
 import Input from 'muicss/lib/react/input'
-import Spinner from '../components/spinner'
+import Spinner from '../components/Spinner'
 import ShareLightbulbForm from '../components/ShareLightbulbForm'
 import { toggleLightbulbState, attemptShare, attemptDeleteLightbulb } from '../actions/lightbulbs'
 import NavBar from '../components/NavBar'
@@ -38,12 +38,12 @@ export default React.createClass({
 
     this.unsubscribe = this.context.store.subscribe(() => {
       if (state.lightbulbs.statuses.filter(v => v.serialnumber == this.props.params.sn).length == 0) {
-        browserHistory.push('/lightbulbs')
+        hashHistory.push('/lightbulbs')
       }
 
       // FIXME: This is probably the wrong way to do this.
       if (state.auth.session === undefined) {
-        browserHistory.push('/login')
+        hashHistory.push('/login')
       }
       // FIXME: This is definitely the wrong way to do this, use react-redux's `connect`
 
@@ -131,7 +131,7 @@ export default React.createClass({
         <NavBar />
         <div className="nav-bar">
           <RaisedButton linkButton={true}
-                        onClick={() => { browserHistory.push('/lightbulbs') }}
+                        onClick={() => { hashHistory.push('/lightbulbs') }}
                         style={{ maxWidth: 45 }}
                         primary={true}
                         icon={ (<span className="home-icon"><ChevronLeft color={ '#ffffff' } /><ActionHome color={ '#ffffff' } /></span>)}/>

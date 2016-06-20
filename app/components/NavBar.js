@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react'
-import { browserHistory } from 'react-router'
+import { hashHistory } from 'react-router'
 import { connect } from 'react-redux'
 import AppBar from 'material-ui/lib/app-bar';
 import FlatButton from 'material-ui/lib/flat-button';
@@ -19,7 +19,7 @@ const NavBar = React.createClass({
 
     logout()(this.props.dispatch);
 
-    browserHistory.push('/login');
+    hashHistory.push('/login');
 
     this.forceUpdate();
   },  

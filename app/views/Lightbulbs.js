@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
 import ReactDOM from 'react-dom';
-import { browserHistory } from 'react-router'
+import { hashHistory } from 'react-router'
 import { Link } from 'react-router'
 import FloatingActionButton from 'material-ui/lib/floating-action-button';
 import Spinner from '../components/Spinner'
@@ -68,7 +68,7 @@ let LightbulbsView = React.createClass({
 
     // FIXME: This is probably the wrong way to do this.
     if (state.auth.session === undefined) {
-      browserHistory.push('/login')
+      hashHistory.push('/login')
       return
     }
 
@@ -180,20 +180,14 @@ let LightbulbsView = React.createClass({
           {info_message_when_none}
           <List>
           {state.lightbulbs.statuses.sort((a,b) => a.serialnumber > b.serialnumber).map( (m,i) => {
-            const link = function(e) {
-              // TODO: fix when I fix routing
-              let sn = e.target.innerHTML;
-              browserHistory.push('/lightbulbs/' + sn)
-              //`/lightbulbs/${m.serialnumber}`;
-            }
             return (
-                  <a onClick={link} key={i}>
+                  <Link to={"/lightbulbs/" + m.serialnumber} key={i}>
                     <ListItem leftAvatar={<Avatar icon={<LightbulbIcon />} backgroundColor={ m.state === 'on' ? Colors.yellow600 : Colors.grey300} />}
                               primaryText={m.name}
                               secondaryText={m.serialnumber} 
                               className="bulb-list-item" />
                       <Divider />
-                  </a>
+                  </Link>
                 )
             })}
           </List>

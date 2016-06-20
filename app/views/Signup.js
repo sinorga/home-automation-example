@@ -1,5 +1,5 @@
 import React from 'react';
-import { browserHistory } from 'react-router';
+import { hashHistory } from 'react-router';
 
 import Form from 'muicss/lib/react/form'
 import Button from 'muicss/lib/react/button'
@@ -33,7 +33,7 @@ export default React.createClass({
       let state = this.context.store.getState()
 
       if (state.auth.session != null && state.auth.session.loginhack === true) {
-        browserHistory.push('/login')
+        hashHistory.push('/login')
         return
       }
 
@@ -66,7 +66,7 @@ export default React.createClass({
 
     return (
       <div>
-        <AppBar style={ appBarStyle } showMenuIconButton={false} iconElementRight={ <RaisedButton linkButton={true} onClick={() => { browserHistory.push('/') }} label="LOGIN" primary={true} /> } />
+        <AppBar style={ appBarStyle } showMenuIconButton={false} iconElementRight={ <RaisedButton linkButton={true} onClick={() => { hashHistory.push('/') }} label="LOGIN" primary={true} /> } />
 
         <Container>
           <div className='logo-container'>
