@@ -1,10 +1,11 @@
-dataports:
--   alias: hours
-    format: integer
-    name: hours
+# Murano Product Spec File - Smart Lighbulb Example Application
+resources:
 -   alias: temperature
-    format: integer
-    name: temperature
+    format: float
+-   alias: humidity
+    format: float
 -   alias: state
-    format: string
-    name: state
+    format: integer
+    initial: 0
+-   alias: uptime
+    format: integer
