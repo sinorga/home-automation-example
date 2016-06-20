@@ -162,7 +162,6 @@ export function requestLightbulbs () {
 }
 
 function requestLightbulbsSuccess (statuses) {
-  console.log('requestLightbulbsSuccess', statuses);
   return (dispatch) => {
     dispatch({
       type: 'REQUEST_LIGHTBULBS_SUCCESS',

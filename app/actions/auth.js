@@ -159,3 +159,11 @@ export function logout () {
     window.sessionStorage.removeItem('session')
   }
 }
+
+export function clearAuthError() {
+  return (dispatch) => {
+    dispatch({
+      type: 'CLEAR_ERROR'
+    })
+  }
+}

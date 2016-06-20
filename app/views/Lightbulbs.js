@@ -7,12 +7,10 @@ import Spinner from '../components/spinner'
 import AddLightbulbForm from '../components/add_lightbulb_form'
 import { attemptToggleLightbulbState, attemptAddLightbulb, requestLightbulbs } from '../actions/lightbulbs'
 import Container from 'muicss/lib/react/container';
-import { logout } from '../actions/auth'
 import { connect } from 'react-redux'
-
+import NavBar from '../components/nav_bar'
 
 import ContentAdd from 'material-ui/lib/svg-icons/content/add';
-import AppBar from 'material-ui/lib/app-bar';
 import List from 'material-ui/lib/lists/list';
 import ListItem from 'material-ui/lib/lists/list-item';
 import ActionInfo from 'material-ui/lib/svg-icons/action/info';
@@ -22,7 +20,6 @@ import LightbulbIcon from 'material-ui/lib/svg-icons/action/lightbulb-outline.js
 import ActionAssignment from 'material-ui/lib/svg-icons/action/assignment';
 import Colors from 'material-ui/lib/styles/colors';
 import RaisedButton from 'material-ui/lib/raised-button';
-import FlatButton from 'material-ui/lib/flat-button';
 import Dialog from 'material-ui/lib/dialog';
 
 // Test 
@@ -64,19 +61,6 @@ let LightbulbsView = React.createClass({
   handleAddLightbulb(request) {
     attemptAddLightbulb(request.sn)(this.context.store.dispatch, this.context.store.getState)
     this.closeLightbulbModal();
-  },
-
-  /**
-   * TODO: this can't the right way to handle logging out...
-   */
-  handleLogout (event) {
-    event.preventDefault();
-
-    logout()(this.context.store.dispatch)
-
-    browserHistory.push('/login')
-
-    this.forceUpdate()
   },
 
   componentWillMount() {
@@ -153,8 +137,7 @@ let LightbulbsView = React.createClass({
       : <Spinner style={{visibility: "hidden"}} />
     )
 
-    let lightbulbs_error = this.props.error; // this.context.store.getState().lightbulbs.error
-    console.log('lightbulbs_error during render() is:', lightbulbs_error);
+    let lightbulbs_error = this.props.error;
     let error_message = (
       lightbulbs_error == null
       ? <div></div>
@@ -167,10 +150,6 @@ let LightbulbsView = React.createClass({
       : <div></div>
     );
 
-    let appBarStyle = {
-      backgroundColor: '#ffffff'
-    };
-
     let state = this.context.store.getState();
 
     const actionButtonStyle = {
@@ -181,20 +160,9 @@ let LightbulbsView = React.createClass({
       marginBottom:30
     };
 
-    const logoutButton = (
-      <FlatButton label="LOGOUT"
-                  primary={true}
-                  style={{ color: 'rgb(255, 64, 129)' }}
-                  onTouchStart={this.handleLogout}
-                  onMouseUp={this.handleLogout} />
-    );
-
     return (
       <div>
-        <AppBar title={ <div className='appbar-logo-container'><img src='/images/example_iot_company_logo_mark.svg' /></div> }
-                style={ appBarStyle }
-                iconElementRight={ logoutButton }
-                showMenuIconButton={false}  />
+        <NavBar />
 
         <div className='masthead'>
           <div className='headline'>My Home {spinner_when_waiting}</div>

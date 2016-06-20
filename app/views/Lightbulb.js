@@ -7,10 +7,8 @@ import Input from 'muicss/lib/react/input'
 import Spinner from '../components/spinner'
 import ShareLightbulbForm from '../components/share_lightbulb_form'
 import { toggleLightbulbState, attemptShare, attemptDeleteLightbulb } from '../actions/lightbulbs'
-import { logout } from '../actions/auth'
+import NavBar from '../components/nav_bar'
 
-import FlatButton from 'material-ui/lib/flat-button';
-import AppBar from 'material-ui/lib/app-bar';
 import IconButton from 'material-ui/lib/icon-button';
 import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
 import IconMenu from 'material-ui/lib/menus/icon-menu';
@@ -65,19 +63,6 @@ export default React.createClass({
     attemptDeleteLightbulb(this.props.params.sn)(this.context.store.dispatch,this.context.store.getState)
   },
 
-  /**
-   * TODO: this can't the right way to handle logging out...
-   */
-  handleLogout (event) {
-    event.preventDefault();
-
-    logout()(this.context.store.dispatch);
-
-    browserHistory.push('/login');
-
-    this.forceUpdate();
-  },
-
   render() {
     let spinner_when_waiting = (
       this.context.store.getState().lightbulbs.isFetching
@@ -89,18 +74,6 @@ export default React.createClass({
       this.context.store.getState().auth.error == null
       ? <div></div>
       : <div className='messagebox error'>{this.context.store.getState().auth.error}</div>
-    );
-
-    let appBarStyle = {
-      backgroundColor: '#ffffff'
-    };
-
-    const logoutButton = (
-      <FlatButton label="LOGOUT"
-                  primary={true}
-                  style={{ color: 'rgb(255, 64, 129)' }}
-                  onTouchStart={this.handleLogout}
-                  onMouseUp={this.handleLogout} />
     );
 
     let state = this.context.store.getState();
@@ -155,11 +128,7 @@ export default React.createClass({
 
     return (
       <div>
-        <AppBar title={ <div className='appbar-logo-container'><img src='/images/example_iot_company_logo_mark.svg' /></div> }
-                style={ appBarStyle }
-                iconElementRight={ logoutButton }
-                showMenuIconButton={false} />
-
+        <NavBar />
         <div className="nav-bar">
           <RaisedButton linkButton={true}
                         onClick={() => { browserHistory.push('/lightbulbs') }}
