@@ -54,7 +54,7 @@ end
 --
 local user = currentUser(request)
 if user ~= nil and user.id ~= nil then
-    return {["token"] = sid}
+    return user
 end
 response.code = 400
 response.message = "Session invalid"
@@ -357,7 +357,7 @@ if value.state ~= nil and value.state == request.body.state then -- condition tr
 end
 value.alerts = {req_alert}
 kv_write(sn, value)
---#ENDPOINT GET /debug/{cmd}
+--#ENDPOINT GET /debug-command/{cmd}
 response.message = debug(request.parameters.cmd)
 --#ENDPOINT WEBSOCKET /debug
 response.message = debug(websocket_info.message)

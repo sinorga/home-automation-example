@@ -8,6 +8,7 @@ function currentUser(request)
   end
   local user = User.getCurrentUser({token = sid})
   if user ~= nil and user.id ~= nil then
+    user.token = sid
     return user
   end
   return nil
