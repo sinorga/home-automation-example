@@ -3,9 +3,6 @@
   "file_dir": "public",
   "custom_api": "sample_api.lua",
   "custom_api_hook": "_init",
-  "product_spec": {
-    "lightbulb": "lightbulb.yaml"
-  },
   "modules": {
     "auth": "modules/util.lua",
     "debug": "modules/debug.lua"
