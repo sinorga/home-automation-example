@@ -257,12 +257,17 @@ if user ~= nil then
     id = user.id, role_id = "owner", parameter_name = "sn", parameter_value = sn
   })
   if isowner == 'OK' then
+    local message = {}
     for _, alias in ipairs({"state", "hours", "temperature"}) do
       if request.body[alias] ~= nil then
-        local result = write(sn, alias, request.body[alias])
+        local ret = write(sn, alias, request.body[alias])
+        if ret.status ~= nil and ret.status ~= "ok" then
+          table.insert(message, {alias = alias, status = ret.status})
+        end
       end
     end
     response.code = 200
+    response.message = table.getn(message) ~= 0 and  message or ""
   else
     http_error(403, response)
   end

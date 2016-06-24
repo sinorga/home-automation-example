@@ -6,7 +6,7 @@ function api (method) {
     options = options || {};
     options.headers = options.headers || {};
     options.headers['Connection'] = 'keep-alive';
-    return request(method, 'http://letz1.apps.exosite-dev.io' + path, options);
+    return request(method, 'https://ivanlan.apps.exosite-staging.io' + path, options);
   };
 }
 
@@ -44,7 +44,7 @@ Response:
   body - a string if in the browser or a buffer if on the server
 */
 
-var user = 'dominicletz+15@exosite.com';
+var user = 'ivanlan@exosite.com';
 var passw = 'secr*etpassw0rd';
 var sn = '1';
 
@@ -143,7 +143,7 @@ describe('read/write device', function () {
   });
   bit('write device', function () {
     var res = post('/lightbulb/' + sn, {
-      json: {state: 'on', hours: 8},
+      json: {state: 'off', hours: 6, temperature: 36.7},
       headers: {'Cookie': 'sid=' + token}
     });
     console.log(res.body.toString());
@@ -176,8 +176,7 @@ describe('read/write device', function () {
     });
     bit('drop shared device to user', function () {
       var res = del('/user/' + user + '/shared/' + sn, {
-        json: true,
-        headers: {'Cookie': 'sid=' + token}
+        headers: {'Cookie': 'sid=' + token, 'Content-Type': 'application/json'}
       });
       console.log(res.body.toString());
       assert.equal(res.statusCode, 200);
