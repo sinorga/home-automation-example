@@ -1,16 +1,16 @@
-import React from 'react'
+import React, { PropTypes } from 'react'
 import ReactDOM from 'react-dom';
-import { browserHistory } from 'react-router'
+import { hashHistory } from 'react-router'
 import { Link } from 'react-router'
 import FloatingActionButton from 'material-ui/lib/floating-action-button';
-import Spinner from '../components/spinner'
-import AddLightbulbForm from '../components/add_lightbulb_form'
+import Spinner from '../components/Spinner'
+import AddLightbulbForm from '../components/AddLightbulbForm'
 import { attemptToggleLightbulbState, attemptAddLightbulb, requestLightbulbs } from '../actions/lightbulbs'
 import Container from 'muicss/lib/react/container';
-import { logout } from '../actions/auth'
+import { connect } from 'react-redux'
+import NavBar from '../components/NavBar'
 
 import ContentAdd from 'material-ui/lib/svg-icons/content/add';
-import AppBar from 'material-ui/lib/app-bar';
 import List from 'material-ui/lib/lists/list';
 import ListItem from 'material-ui/lib/lists/list-item';
 import ActionInfo from 'material-ui/lib/svg-icons/action/info';
@@ -20,10 +20,25 @@ import LightbulbIcon from 'material-ui/lib/svg-icons/action/lightbulb-outline.js
 import ActionAssignment from 'material-ui/lib/svg-icons/action/assignment';
 import Colors from 'material-ui/lib/styles/colors';
 import RaisedButton from 'material-ui/lib/raised-button';
-import FlatButton from 'material-ui/lib/flat-button';
 import Dialog from 'material-ui/lib/dialog';
 
-export default React.createClass({
+// Test 
+import { bindActionCreators } from 'redux'
+
+function mapStateToProps(state) {
+  return { 
+    error: state.lightbulbs.error,
+    statuses: state.lightbulbs.statuses
+  }
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(
+    { attemptToggleLightbulbState, attemptAddLightbulb, requestLightbulbs }, 
+    dispatch)
+}
+
+let LightbulbsView = React.createClass({
 
   contextTypes: {
     store: React.PropTypes.object
@@ -48,25 +63,12 @@ export default React.createClass({
     this.closeLightbulbModal();
   },
 
-  /**
-   * TODO: this can't the right way to handle logging out...
-   */
-  handleLogout (event) {
-    event.preventDefault();
-
-    logout()(this.context.store.dispatch)
-
-    browserHistory.push('/login')
-
-    this.forceUpdate()
-  },
-
   componentWillMount() {
     let state = this.context.store.getState()
 
     // FIXME: This is probably the wrong way to do this.
     if (state.auth.session === undefined) {
-      browserHistory.push('/login')
+      hashHistory.push('/login')
       return
     }
 
@@ -78,12 +80,12 @@ export default React.createClass({
     //})
     //
     //// TODO: replace all these calls with redux-thunk
-    //requestLightbulbs()(this.context.store.dispatch, this.context.store.getState)
-    //
-    //this.pollInterval = 1000
-    //
-    //this.updateStatuses()
-    //
+    requestLightbulbs()(this.context.store.dispatch, this.context.store.getState)
+
+    
+    this.pollInterval = 1000
+    this.updateStatuses()
+
     //window.addEventListener("blur", this.onblur)
     //window.addEventListener("focus", this.onfocus)
   },
@@ -97,16 +99,16 @@ export default React.createClass({
   //  this.updateStatuses()
   //},
 
-  //updateStatuses () {
-  //  let state = this.context.store.getState()
-  //  if (state.lightbulbs.isFetching == false) {
-  //    requestLightbulbs()(this.context.store.dispatch, this.context.store.getState)
-  //  }
-  //
-  //  this.pollTimer = window.setTimeout(() => {
-  //    this.updateStatuses()
-  //  }, this.pollInterval)
-  //},
+  updateStatuses () {
+    let state = this.context.store.getState()
+    if (state.lightbulbs.isFetching == false) {
+      requestLightbulbs()(this.context.store.dispatch, this.context.store.getState)
+    }
+  
+   this.pollTimer = window.setTimeout(() => {
+     this.updateStatuses()
+   }, this.pollInterval)
+  },
 
   componentWillUnmount() {
     if (typeof this.unsubscribe == "function") { this.unsubscribe() }
@@ -115,7 +117,19 @@ export default React.createClass({
     window.removeEventListener("blur", this.onblur)
     window.removeEventListener("focus", this.onfocus)
   },
-
+  propTypes: {
+    error: PropTypes.string,
+    lightbulbs: PropTypes.arrayOf(PropTypes.shape({
+      serialnumber: PropTypes.string.isRequired,
+      state: PropTypes.number.isRequired
+    }))
+  },
+  getDefaultProps() {
+    return {
+      error: '',
+      statuses: []
+    }
+  },
   render() {
     let spinner_when_waiting = (
       this.context.store.getState().lightbulbs.isFetching && this.context.store.getState().lightbulbs.statuses.length == 0
@@ -123,8 +137,7 @@ export default React.createClass({
       : <Spinner style={{visibility: "hidden"}} />
     )
 
-    let lightbulbs_error = this.context.store.getState().lightbulbs.error
-    console.log('lightbulbs_error', lightbulbs_error);
+    let lightbulbs_error = this.props.error;
     let error_message = (
       lightbulbs_error == null
       ? <div></div>
@@ -137,10 +150,6 @@ export default React.createClass({
       : <div></div>
     );
 
-    let appBarStyle = {
-      backgroundColor: '#ffffff'
-    };
-
     let state = this.context.store.getState();
 
     const actionButtonStyle = {
@@ -151,20 +160,9 @@ export default React.createClass({
       marginBottom:30
     };
 
-    const logoutButton = (
-      <FlatButton label="LOGOUT"
-                  primary={true}
-                  style={{ color: 'rgb(255, 64, 129)' }}
-                  onTouchStart={this.handleLogout}
-                  onMouseUp={this.handleLogout} />
-    );
-
     return (
       <div>
-        <AppBar title={ <div className='appbar-logo-container'><img src='/images/example_iot_company_logo_mark.svg' /></div> }
-                style={ appBarStyle }
-                iconElementRight={ logoutButton }
-                showMenuIconButton={false}  />
+        <NavBar />
 
         <div className='masthead'>
           <div className='headline'>My Home {spinner_when_waiting}</div>
@@ -182,12 +180,12 @@ export default React.createClass({
           {info_message_when_none}
           <List>
           {state.lightbulbs.statuses.sort((a,b) => a.serialnumber > b.serialnumber).map( (m,i) => {
-            const link = `/lightbulbs/${m.serialnumber}`;
             return (
-                  <Link to={link} key={i}>
+                  <Link to={"/lightbulbs/" + m.serialnumber} key={i}>
                     <ListItem leftAvatar={<Avatar icon={<LightbulbIcon />} backgroundColor={ m.state === 'on' ? Colors.yellow600 : Colors.grey300} />}
                               primaryText={m.name}
-                              secondaryText={m.serialnumber} />
+                              secondaryText={m.serialnumber} 
+                              className="bulb-list-item" />
                       <Divider />
                   </Link>
                 )
@@ -209,6 +207,8 @@ export default React.createClass({
   }
 })
 
+
+export default connect(mapStateToProps, mapDispatchToProps)(LightbulbsView);
 
 
 //const rightIconMenu = (

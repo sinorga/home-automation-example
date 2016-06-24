@@ -1,5 +1,5 @@
 import React from 'react'
-import { browserHistory } from 'react-router'
+import { hashHistory } from 'react-router'
 import Button from 'muicss/lib/react/button'
 import RaisedButton from 'material-ui/lib/raised-button';
 import ExositeTheme from './ExositeTheme'

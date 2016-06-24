@@ -1,16 +1,14 @@
 import React from 'react'
-import { browserHistory } from 'react-router'
+import { hashHistory } from 'react-router'
 import { Link } from 'react-router'
 import Form from 'muicss/lib/react/form'
 import Button from 'muicss/lib/react/button'
 import Input from 'muicss/lib/react/input'
-import Spinner from '../components/spinner'
-import ShareLightbulbForm from '../components/share_lightbulb_form'
+import Spinner from '../components/Spinner'
+import ShareLightbulbForm from '../components/ShareLightbulbForm'
 import { toggleLightbulbState, attemptShare, attemptDeleteLightbulb } from '../actions/lightbulbs'
-import { logout } from '../actions/auth'
+import NavBar from '../components/NavBar'
 
-import FlatButton from 'material-ui/lib/flat-button';
-import AppBar from 'material-ui/lib/app-bar';
 import IconButton from 'material-ui/lib/icon-button';
 import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
 import IconMenu from 'material-ui/lib/menus/icon-menu';
@@ -40,12 +38,12 @@ export default React.createClass({
 
     this.unsubscribe = this.context.store.subscribe(() => {
       if (state.lightbulbs.statuses.filter(v => v.serialnumber == this.props.params.sn).length == 0) {
-        browserHistory.push('/lightbulbs')
+        hashHistory.push('/lightbulbs')
       }
 
       // FIXME: This is probably the wrong way to do this.
       if (state.auth.session === undefined) {
-        browserHistory.push('/login')
+        hashHistory.push('/login')
       }
       // FIXME: This is definitely the wrong way to do this, use react-redux's `connect`
 
@@ -65,19 +63,6 @@ export default React.createClass({
     attemptDeleteLightbulb(this.props.params.sn)(this.context.store.dispatch,this.context.store.getState)
   },
 
-  /**
-   * TODO: this can't the right way to handle logging out...
-   */
-  handleLogout (event) {
-    event.preventDefault();
-
-    logout()(this.context.store.dispatch);
-
-    browserHistory.push('/login');
-
-    this.forceUpdate();
-  },
-
   render() {
     let spinner_when_waiting = (
       this.context.store.getState().lightbulbs.isFetching
@@ -91,18 +76,6 @@ export default React.createClass({
       : <div className='messagebox error'>{this.context.store.getState().auth.error}</div>
     );
 
-    let appBarStyle = {
-      backgroundColor: '#ffffff'
-    };
-
-    const logoutButton = (
-      <FlatButton label="LOGOUT"
-                  primary={true}
-                  style={{ color: 'rgb(255, 64, 129)' }}
-                  onTouchStart={this.handleLogout}
-                  onMouseUp={this.handleLogout} />
-    );
-
     let state = this.context.store.getState();
 
     let lightbulb = state.lightbulbs.statuses.find(lb => lb.serialnumber === this.props.params.sn);
@@ -111,7 +84,11 @@ export default React.createClass({
       top: 16
     };
 
-    let shares = state.lightbulbs.shares.filter(v => v.serialnumber == this.props.params.sn);
+    let shares = [];
+    let alerts = [];
+    let sharesList = [];
+    let alertsList = [];
+    /* let shares = state.lightbulbs.shares.filter(v => v.serialnumber == this.props.params.sn);
     let sharesList = (
       (shares.length > 0) ?
         shares.map((v) => {
@@ -135,7 +112,7 @@ export default React.createClass({
         }) :
         ( <ListItem primaryText="No alerts created." /> )
     );
-
+    */
     const rightIconMenu = (
       <IconMenu
         iconButtonElement={<IconButton><MoreVertIcon color={Colors.grey400} /></IconButton>}
@@ -151,14 +128,10 @@ export default React.createClass({
 
     return (
       <div>
-        <AppBar title={ <div className='appbar-logo-container'><img src='/images/example_iot_company_logo_mark.svg' /></div> }
-                style={ appBarStyle }
-                iconElementRight={ logoutButton }
-                showMenuIconButton={false} />
-
+        <NavBar />
         <div className="nav-bar">
           <RaisedButton linkButton={true}
-                        href="/lightbulbs"
+                        onClick={() => { hashHistory.push('/lightbulbs') }}
                         style={{ maxWidth: 45 }}
                         primary={true}
                         icon={ (<span className="home-icon"><ChevronLeft color={ '#ffffff' } /><ActionHome color={ '#ffffff' } /></span>)}/>

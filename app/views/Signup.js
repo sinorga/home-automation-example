@@ -1,13 +1,13 @@
 import React from 'react';
-import { browserHistory } from 'react-router';
+import { hashHistory } from 'react-router';
 
 import Form from 'muicss/lib/react/form'
 import Button from 'muicss/lib/react/button'
 import Input from 'muicss/lib/react/input'
 
 import TextField from 'material-ui/lib/text-field';
-import Spinner from '../components/spinner';
-import { attemptSignup } from '../actions/auth'
+import Spinner from '../components/Spinner';
+import { attemptSignup, clearAuthError } from '../actions/auth'
 import AppBar from 'material-ui/lib/app-bar';
 import RaisedButton from 'material-ui/lib/raised-button';
 import FlatButton from 'material-ui/lib/flat-button';
@@ -28,11 +28,12 @@ export default React.createClass({
   },
 
   componentWillMount () {
+    clearAuthError()(this.context.store.dispatch)
     this.unsubscribe = this.context.store.subscribe(() => {
       let state = this.context.store.getState()
 
       if (state.auth.session != null && state.auth.session.loginhack === true) {
-        browserHistory.push('/login')
+        hashHistory.push('/login')
         return
       }
 
@@ -65,11 +66,13 @@ export default React.createClass({
 
     return (
       <div>
-        <AppBar style={ appBarStyle } showMenuIconButton={false} iconElementRight={ <RaisedButton linkButton={true} onClick={() => { browserHistory.push('/') }} label="LOGIN" primary={true} /> } />
+        <AppBar style={ appBarStyle } showMenuIconButton={false} iconElementRight={ <RaisedButton linkButton={true} onClick={() => { hashHistory.push('/') }} label="LOGIN" primary={true} /> } />
 
         <Container>
           <div className='logo-container'>
-            <img src="images/example_iot_company_logo.svg" />
+            <img src="images/example_iot_company_logo_mark.svg" />
+            <h1>example</h1>
+            <h4>IoT Company</h4>
           </div>
           <h2 className="page-header">Sign Up</h2>
           {error_message}
@@ -78,7 +81,9 @@ export default React.createClass({
             <Input label='Email address' floatingLabel/>
             <Input type='password' label='Password' floatingLabel/>
             <Button className='signup-button' color='primary'>SEND VERIFICATION EMAIL</Button>
-            {spinner_when_waiting}
+            <div className='progress-container'>
+              {spinner_when_waiting}
+            </div>
           </Form>
 
           <div className="terms-conditions">

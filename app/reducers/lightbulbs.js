@@ -206,6 +206,7 @@ function reducer (state, action) {
         error: action.error
       }
     default:
+      //console.log('DEBUG: not a lightbulb action type ' + action.type);
       return state
   }
 }

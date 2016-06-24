@@ -76,6 +76,11 @@ function reducer (state, action) {
         email: action.email,
         password: action.password
       }
+    case 'CLEAR_ERROR':
+      return {
+        ...state,
+        error: undefined
+      }
     case 'LOGOUT':
       return {
         status: 'none'

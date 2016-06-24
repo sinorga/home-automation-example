@@ -1,5 +1,5 @@
 import React from 'react';
-import { browserHistory } from 'react-router';
+import { hashHistory } from 'react-router';
 import Link from 'react-router';
 
 import Form from 'muicss/lib/react/form'
@@ -7,8 +7,8 @@ import Button from 'muicss/lib/react/button'
 import Input from 'muicss/lib/react/input'
 
 import TextField from 'material-ui/lib/text-field';
-import Spinner from '../components/spinner';
-import { attemptLogin } from '../actions/auth'
+import Spinner from '../components/Spinner';
+import { attemptLogin, clearAuthError } from '../actions/auth'
 import AppBar from 'material-ui/lib/app-bar';
 import RaisedButton from 'material-ui/lib/raised-button';
 import FlatButton from 'material-ui/lib/flat-button';
@@ -31,12 +31,13 @@ export default React.createClass({
   },
 
   componentDidMount() {
+    // clearAuthError()(this.context.store.dispatch)
     this.unsubscribe = this.context.store.subscribe(() => {
       let state = this.context.store.getState()
 
       // FIXME: This is probably the wrong way to do this.
       if (state.auth.session !== undefined) {
-        browserHistory.push('/lightbulbs')
+        hashHistory.push('/lightbulbs')
         return
       }
 
@@ -48,10 +49,6 @@ export default React.createClass({
     if (typeof this.unsubscribe == "function") { this.unsubscribe() }
   },
   
-  goToSignup() {
-    asdf
-  }, 
-
   render () {
     let spinner_when_waiting = (
       this.context.store.getState().auth.status === 'waiting'
@@ -72,15 +69,16 @@ export default React.createClass({
 
     return (
       <div>
-        <AppBar style={ appBarStyle } showMenuIconButton={false} iconElementRight={ <RaisedButton linkButton={true} onClick={() => { browserHistory.push('/signup') }} label="SIGNUP" primary={true} /> } />
+        <AppBar style={ appBarStyle } showMenuIconButton={false} iconElementRight={ <RaisedButton linkButton={true} onClick={() => { hashHistory.push('/signup') }} label="SIGNUP" primary={true} /> } />
 
         <Container>
           <div className='logo-container'>
-            <img src="images/example_iot_company_logo.svg" />
+            <img src="images/example_iot_company_logo_mark.svg" />
+            <h1>example</h1>
+            <h4>IoT Company</h4>
           </div>
           <h2 className="page-header">Login</h2>
           {error_message}
-
           <Form onSubmit={this.handleLogin}>
             <Input label='Email address' floatingLabel/>
             <Input type='password' label='Password' floatingLabel/>

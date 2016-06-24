@@ -222,3 +222,44 @@ form {
     left: 45%;
   }
 }
+
+.bulb-list-item {
+  padding-bottom: 15px;
+}
+
+.logo-container {
+  h1 {
+    text-align: center; 
+    font-family: 'Roboto', sans-serif;
+    font-weight: 300;
+    margin-top: 0px;
+    margin-bottom: 0px;
+  }
+  h4 {
+    text-align: center; 
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    font-size: 13px;
+    color: #CBCBCB;
+    margin-top: 0px;
+  }
+
+  margin: 15px auto;
+  left: 54%;
+  text-align: center;
+
+  img {
+    width: 40px;
+    text-align: center;
+  }
+}
+
+
+.progress-container {
+  width: 100%;
+  .progress {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
