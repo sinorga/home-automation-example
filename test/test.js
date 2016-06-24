@@ -156,37 +156,56 @@ describe('read/write device', function () {
     console.log(res.body.toString());
     assert.equal(res.statusCode, 200);
   });
+});
 
-  describe('share device', function () {
-    var token;
-    before('login to get token', function () {
-      var res = post('/session', {
-        json: {email: user, password: passw}
-      });
-      assert.equal(res.statusCode, 200);
-      token = JSON.parse(res.body).token;
+describe('share device', function () {
+  var token;
+  before('login to get token', function () {
+    var res = post('/session', {
+      json: {email: user, password: passw}
     });
-    bit('share device to user', function () {
-      var res = post('/user/' + user + '/shared/', {
-        json: {serialnumber: sn},
-        headers: {'Cookie': 'sid=' + token}
-      });
-      console.log(res.body.toString());
-      assert.equal(res.statusCode, 200);
+    assert.equal(res.statusCode, 200);
+    token = JSON.parse(res.body).token;
+  });
+  bit('share device to user', function () {
+    var res = post('/user/' + user + '/shared/', {
+      json: {serialnumber: sn},
+      headers: {'Cookie': 'sid=' + token}
     });
-    bit('drop shared device to user', function () {
-      var res = del('/user/' + user + '/shared/' + sn, {
-        headers: {'Cookie': 'sid=' + token, 'Content-Type': 'application/json'}
-      });
-      console.log(res.body.toString());
-      assert.equal(res.statusCode, 200);
+    console.log(res.body.toString());
+    assert.equal(res.statusCode, 200);
+  });
+  bit('drop shared device to user', function () {
+    var res = del('/user/' + user + '/shared/' + sn, {
+      headers: {'Cookie': 'sid=' + token, 'Content-Type': 'application/json'}
     });
-    bit('get shared devices list', function () {
-      var res = get('/user/' + user + '/shared/', {
-        headers: {'Cookie': 'sid=' + token}
-      });
-      console.log(res.body.toString());
-      assert.equal(res.statusCode, 200);
+    console.log(res.body.toString());
+    assert.equal(res.statusCode, 200);
+  });
+  bit('get shared devices list', function () {
+    var res = get('/user/' + user + '/shared/', {
+      headers: {'Cookie': 'sid=' + token}
     });
+    console.log(res.body.toString());
+    assert.equal(res.statusCode, 200);
+  });
+});
+
+describe('alert user', function () {
+  var token;
+  before('login to get token', function () {
+    var res = post('/session', {
+      json: {email: user, password: passw}
+    });
+    assert.equal(res.statusCode, 200);
+    token = JSON.parse(res.body).token;
+  });
+  bit('alert user when device is off', function () {
+    var res = post('/lightbulb/' + sn + '/alert', {
+      json: {state:"off", timer:1, email:user, active:true, message:"device is off"},
+      headers: {'Cookie': 'sid=' + token}
+    });
+    console.log(res.body.toString());
+    assert.equal(res.statusCode, 200);
   });
 });
