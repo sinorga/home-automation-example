@@ -1,25 +1,16 @@
-import React from 'react'
-import { Provider } from 'react-redux'
-import AppStore from '../stores/app'
-import Container from 'muicss/lib/react/container'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import React from 'react';
+import theme from '../theme';
 
-import injectTapEventPlugin from 'react-tap-event-plugin';
+const App = ({ children }) => (
+  <MuiThemeProvider muiTheme={getMuiTheme(theme)}>
+    {children}
+  </MuiThemeProvider>
+);
 
-// Needed for onTouchTap
-// Check this repo:
-// https://github.com/zilverline/react-tap-event-plugin
-injectTapEventPlugin();
+App.propTypes = {
+  children: React.PropTypes.node.isRequired,
+};
 
-
-export default React.createClass({
-
-  render () {
-   return (
-      <Provider store={AppStore}>
-        <div>
-          {this.props.children}
-        </div>
-      </Provider>
-    )
-  }
-})
+export default App;
