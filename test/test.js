@@ -1,12 +1,23 @@
 var assert = require('chai').assert;
 var request = require('sync-request');
 
+// puts .env into env
+require('dotenv').config({silent: true, path: '.env'});
+
+var API_BASE_URL = null;
+if (typeof process.env.API_BASE_URL !== 'undefined') {
+  API_BASE_URL = process.env.API_BASE_URL;
+} else {
+  throw 'API_BASE_URL not set. Please set in .env or environment ' + 
+    ', e.g. export API_BASE_URL=https://weaver.exosite-staging.com'; 
+}
+
 function api (method) {
   return function (path, options) {
     options = options || {};
     options.headers = options.headers || {};
     options.headers['Connection'] = 'keep-alive';
-    return request(method, 'http://letz1.apps.exosite-dev.io' + path, options);
+    return request(method, API_BASE_URL + path, options);
   };
 }
 
@@ -50,7 +61,7 @@ var sn = '1';
 
 describe('User', function () {
   before(function (done) {
-    get('/debug/clean');
+    get('/debug-command/clean');
     done();
   });
 
@@ -59,7 +70,6 @@ describe('User', function () {
       json: {password: passw}
     });
 
-    console.log(res.body.toString());
     assert.equal(res.statusCode, 200);
   });
 
@@ -80,11 +90,10 @@ describe('User', function () {
   });
 
   bit('login after activation', function () {
-    get('/debug/activate');
+    get('/debug-command/activate');
     var res = post('/session', {
       json: {email: user, password: passw}
     });
-    console.log(res.body.toString());
     assert.equal(res.statusCode, 200);
   });
 });
