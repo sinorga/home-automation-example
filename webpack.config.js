@@ -1,3 +1,4 @@
+var path = require('path');
 var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var CleanWebpackPlugin = require('clean-webpack-plugin');
@@ -9,8 +10,12 @@ var outputPath = 'public/builds';
 
 function buildPluginList() {
   var plugins = [
-    //new CleanWebpackPlugin(outputPath),
-    //new ExtractTextPlugin('style.css')
+    // make sure we can use Promise / fetch without importing them
+    // Always use bluebird even if native promises exist, only use fetch if we need to
+    new webpack.ProvidePlugin({
+      'Promise': 'bluebird',
+      'fetch': 'imports?this=>global!exports?global.fetch!whatwg-fetch'
+    }),
   ];
 
   if(process.env.NODE_ENV === 'production') {
@@ -28,8 +33,11 @@ function buildPluginList() {
     var apiBaseUrl = JSON.stringify(process.env.API_BASE_URL || '');
     console.log('apiBaseUrl: ', apiBaseUrl);
     plugins.push(new webpack.DefinePlugin({
-      API_BASE_URL: apiBaseUrl })
-    );
+      API_BASE_URL: apiBaseUrl,
+      'process.env.NODE_ENV': JSON.stringify(
+        process.env.NODE_ENV || 'development'
+      )
+    }));
   }
 
   plugins.push(new ExtractTextPlugin('style.css'));
@@ -51,7 +59,8 @@ module.exports = {
   devtool: 'cheap-module-source-map',
 
   devServer: {
-    hot: true
+    contentBase: path.resolve(__dirname, '../app'),
+    historyApiFallback: true,
   },
 
   module: {
@@ -59,7 +68,10 @@ module.exports = {
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
-        loader: 'babel-loader?presets[]=es2015&presets[]=react&plugins[]=transform-object-rest-spread'
+        loaders: [
+          'react-hot',
+          'babel-loader?presets[]=es2015&presets[]=react&plugins[]=transform-object-rest-spread'
+        ],
       },
       {
         test: /\.(jpe?g|png|gif|svg)$/i,
@@ -79,4 +91,3 @@ module.exports = {
     ]
   }
 }
-
