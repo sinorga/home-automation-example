@@ -31,7 +31,7 @@
 --]]
 
 Timeseries.write({
-  query = data.alias .. ",sn=" .. data.device_sn .. " value=" .. data.value[2]
+  query = data.alias .. ",sn=" .. data.device_sn .. " value=" .. tostring(data.value[2])
 })
 local value = kv_read(data.device_sn)
 value[data.alias] = data.value[2]
