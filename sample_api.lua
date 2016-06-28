@@ -21,14 +21,11 @@ else
 end
 --#ENDPOINT GET /verify/{code}
 local ret = User.activateUser({code = request.parameters.code})
-if ret ~= nil and ret.status_code ~= nil then
-  response.code = ret.status_code
-  if response.code == 200 then
-    response.message = 'Signed up successfully.'
-  else
-    response.message = 'Sign up failed. Error: ' .. ret.message
-  end
-  return response.message
+if ret == 'OK' then
+  response.headers["Content-type"] = "text/html"
+  response.message = '<html><head></head><body>Signed up successfully. <a href="/#/login">Log in</a></body></html>'
+else
+  response.message = 'Sign up failed. Error: ' .. ret.message
 end
 --#ENDPOINT PATCH /user/{email}
 local user = currentUser(request)
