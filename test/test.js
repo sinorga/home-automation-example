@@ -4,13 +4,23 @@ var request = require('sync-request');
 // puts .env into env
 require('dotenv').config({silent: true, path: '.env'});
 
-var API_BASE_URL = null;
-if (typeof process.env.API_BASE_URL !== 'undefined') {
-  API_BASE_URL = process.env.API_BASE_URL;
-} else {
-  throw 'API_BASE_URL not set. Please set in .env or environment ' + 
-    ', e.g. export API_BASE_URL=https://weaver.exosite-staging.com'; 
+function required_env(key, example) {
+  var v = null;
+  if (typeof process.env[key] !== 'undefined') {
+    v = process.env[key];
+  } else {
+    var err = key + ' not set. Please set in .env or environment';
+    if (example) {
+      err += ', e.g. export ' + key + '=' + example;
+    }
+    throw err;
+  }
+  return v;
 }
+
+var API_BASE_URL = required_env('API_BASE_URL', 'https://mysolution.exosite-staging.com');
+var TEST_USER = required_env('TEST_USER', 'testuser@exosite.com');
+var TEST_PASSWORD = required_env('TEST_PASSWORD', '3nfffno2-nks');
 
 function api (method) {
   return function (path, options) {
@@ -55,8 +65,6 @@ Response:
   body - a string if in the browser or a buffer if on the server
 */
 
-var user = 'dominicletz+15@exosite.com';
-var passw = 'secr*etpassw0rd';
 var sn = '1';
 
 describe('User', function () {
@@ -66,16 +74,16 @@ describe('User', function () {
   });
 
   bit('create new user', function () {
-    var res = put('/user/' + user, {
-      json: {password: passw}
+    var res = put('/user/' + TEST_USER, {
+      json: {password: TEST_PASSWORD}
     });
 
     assert.equal(res.statusCode, 200);
   });
 
   bit('create duplicate user', function () {
-    var res = put('/user/' + user, {
-      json: {password: passw}
+    var res = put('/user/' + TEST_USER, {
+      json: {password: TEST_PASSWORD}
     });
 
     assert.equal(res.statusCode, 400);
@@ -83,7 +91,7 @@ describe('User', function () {
 
   bit('login without activation', function () {
     var res = post('/session', {
-      json: {email: user, password: passw}
+      json: {email: TEST_USER, password: TEST_PASSWORD}
     });
 
     assert.equal(res.statusCode, 400);
@@ -92,7 +100,7 @@ describe('User', function () {
   bit('login after activation', function () {
     get('/debug-command/activate');
     var res = post('/session', {
-      json: {email: user, password: passw}
+      json: {email: TEST_USER, password: TEST_PASSWORD}
     });
     assert.equal(res.statusCode, 200);
   });
@@ -102,29 +110,29 @@ describe('Provisioning', function () {
   var token;
   before('login to get token', function () {
     var res = post('/session', {
-      json: {email: user, password: passw}
+      json: {email: TEST_USER, password: TEST_PASSWORD}
     });
     assert.equal(res.statusCode, 200);
     token = JSON.parse(res.body).token;
   });
-  before('remove claimed dvice', function () {
-    post('/user/' + user + '/lightbulbs', {
+  before('remove claimed device', function () {
+    post('/user/' + TEST_USER + '/lightbulbs', {
       json: {serialnumber: sn, link: false},
       headers: {'Cookie': 'sid=' + token}
     });
   });
 
   bit('claim a device', function () {
-    var res = post('/user/' + user + '/lightbulbs', {
+    var res = post('/user/' + TEST_USER + '/lightbulbs', {
       json: {serialnumber: sn, link: true},
       headers: {'Cookie': 'sid=' + token}
     });
 
-    console.log(res.body.toString());
+    //console.log(res.body.toString());
     assert.equal(res.statusCode, 200);
   });
   bit('claim a device twice', function () {
-    var res = post('/user/' + user + '/lightbulbs', {
+    var res = post('/user/' + TEST_USER + '/lightbulbs', {
       json: {serialnumber: sn, link: true},
       headers: {'Cookie': 'sid=' + token}
     });
@@ -133,19 +141,20 @@ describe('Provisioning', function () {
   });
 
   bit('read device status', function () {
-    var res = get('/user/' + user + '/lightbulbs', {
+    var res = get('/user/' + TEST_USER + '/lightbulbs', {
       headers: {'Cookie': 'sid=' + token}
     });
 
-    console.log(res.body.toString());
+    //console.log(res.body.toString());
     assert.equal(res.statusCode, 200);
   });
 });
+
 describe('read/write device', function () {
   var token;
   before('login to get token', function () {
     var res = post('/session', {
-      json: {email: user, password: passw}
+      json: {email: TEST_USER, password: TEST_PASSWORD}
     });
     assert.equal(res.statusCode, 200);
     token = JSON.parse(res.body).token;
@@ -155,48 +164,58 @@ describe('read/write device', function () {
       json: {state: 'on', hours: 8},
       headers: {'Cookie': 'sid=' + token}
     });
-    console.log(res.body.toString());
+    //console.log(res.body.toString());
     assert.equal(res.statusCode, 200);
   });
   bit('read device', function () {
     var res = get('/lightbulb/' + sn, {
       headers: {'Cookie': 'sid=' + token}
     });
+    //console.log(res.body.toString());
+    assert.equal(res.statusCode, 200);
+  });
+  bit('read all user\'s devices', function () {
+    // test polling scenario.
+    for (var i = 0; i < 3; i++) {
+      var res = get('/user/' + TEST_USER + '/lightbulbs', {
+        headers: {'Cookie': 'sid=' + token}
+      });
+    }
     console.log(res.body.toString());
     assert.equal(res.statusCode, 200);
   });
+});
 
-  describe('share device', function () {
-    var token;
-    before('login to get token', function () {
-      var res = post('/session', {
-        json: {email: user, password: passw}
-      });
-      assert.equal(res.statusCode, 200);
-      token = JSON.parse(res.body).token;
+describe('share device', function () {
+  var token;
+  before('login to get token', function () {
+    var res = post('/session', {
+      json: {email: TEST_USER, password: TEST_PASSWORD}
     });
-    bit('share device to user', function () {
-      var res = post('/user/' + user + '/shared/', {
-        json: {serialnumber: sn},
-        headers: {'Cookie': 'sid=' + token}
-      });
-      console.log(res.body.toString());
-      assert.equal(res.statusCode, 200);
+    assert.equal(res.statusCode, 200);
+    token = JSON.parse(res.body).token;
+  });
+  bit('share device to user', function () {
+    var res = post('/user/' + TEST_USER + '/shared/', {
+      json: {serialnumber: sn},
+      headers: {'Cookie': 'sid=' + token}
     });
-    bit('drop shared device to user', function () {
-      var res = del('/user/' + user + '/shared/' + sn, {
-        json: true,
-        headers: {'Cookie': 'sid=' + token}
-      });
-      console.log(res.body.toString());
-      assert.equal(res.statusCode, 200);
+    //console.log(res.body.toString());
+    assert.equal(res.statusCode, 200);
+  });
+  bit('drop shared device to user', function () {
+    var res = del('/user/' + TEST_USER + '/shared/' + sn, {
+      json: true,
+      headers: {'Cookie': 'sid=' + token}
     });
-    bit('get shared devices list', function () {
-      var res = get('/user/' + user + '/shared/', {
-        headers: {'Cookie': 'sid=' + token}
-      });
-      console.log(res.body.toString());
-      assert.equal(res.statusCode, 200);
+    //console.log(res.body.toString());
+    assert.equal(res.statusCode, 200);
+  });
+  bit('get shared devices list', function () {
+    var res = get('/user/' + TEST_USER + '/shared/', {
+      headers: {'Cookie': 'sid=' + token}
     });
+    //console.log(res.body.toString());
+    assert.equal(res.statusCode, 200);
   });
 });
