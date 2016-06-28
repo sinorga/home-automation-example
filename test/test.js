@@ -161,7 +161,7 @@ describe('read/write device', function () {
   });
   bit('write device', function () {
     var res = post('/lightbulb/' + sn, {
-      json: {state: 'on', hours: 8},
+      json: {state: 1},
       headers: {'Cookie': 'sid=' + token}
     });
     //console.log(res.body.toString());
@@ -176,12 +176,12 @@ describe('read/write device', function () {
   });
   bit('read all user\'s devices', function () {
     // test polling scenario.
-    for (var i = 0; i < 3; i++) {
+    for (var i = 0; i < 2; i++) {
       var res = get('/user/' + TEST_USER + '/lightbulbs', {
         headers: {'Cookie': 'sid=' + token}
       });
     }
-    console.log(res.body.toString());
+    //console.log(res.body.toString());
     assert.equal(res.statusCode, 200);
   });
 });

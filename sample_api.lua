@@ -268,7 +268,8 @@ if user ~= nil then
     id = user.id, role_id = "owner", parameter_name = "sn", parameter_value = sn
   })
   if isowner == 'OK' then
-    for _, alias in ipairs({"state", "hours", "temperature"}) do
+    -- allow the owner to write these resources
+    for _, alias in ipairs({"state", "humidity", "temperature"}) do
       if request.body[alias] ~= nil then
         local result = write(sn, alias, request.body[alias])
       end
