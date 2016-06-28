@@ -140,10 +140,7 @@ function deviceRpcCall(sn, procedure, args)
   if device.pid == nil then
     return "device needs to send data first"
   end
-  if device.rid == nil then
-    rid = lookup_rid(device.pid, sn)
-  end
-  local ret = Device.rpcCall({pid = device.pid, auth = {client_id = rid}, calls = {{
+  local ret = Device.rpcCall({pid = device.pid, auth = {client_id = device.rid}, calls = {{
     id = "1",
     procedure = procedure,
     arguments = args
