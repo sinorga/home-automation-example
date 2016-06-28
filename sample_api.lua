@@ -68,6 +68,13 @@ if user == nil or user.id == nil then
   return
 end
 
+-- only add device if the Product event handler has heard from it
+-- (see event_handler/product.lua)
+--if not kv_exists(sn) then
+--  http_error(404, "No device of with that SN found. It must write to the platform before it can be added")
+--  return  
+--end
+
 local owners = User.listRoleParamUsers({
   role_id = "owner",
   parameter_name = "sn",

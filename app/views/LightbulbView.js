@@ -40,8 +40,9 @@ import store from '../store';
 // their Murano configuration.
 function getMuranoErrorText() {
   return `Murano Error: It appears this serial number was either not
-    added as a device, this device was not activated, or the product was
-    not associated with this solution.`;
+    added as a device, this device was not activated, the product was
+    not associated with this solution, or the device has not written
+    to the platform.`;
 }
 
 export default class LightbulbView extends React.Component {
@@ -56,7 +57,10 @@ export default class LightbulbView extends React.Component {
     let errorText = null;
     if (store.lightbulbs) {
       lightbulb = store.lightbulbs.filter(bulb => bulb.serialnumber == props.params.serialnumber)[0];
-      if (lightbulb && (!lightbulb.state || lightbulb.state === "undefined")) {
+      if (lightbulb && 
+          (lightbulb.state === null || 
+           !lightbulb.hasOwnProperty('state') || 
+           lightbulb.state === "undefined")) {
         lightbulb = null;
         errorText = getMuranoErrorText();
       }
@@ -121,7 +125,7 @@ export default class LightbulbView extends React.Component {
 
     if (!lightbulb) return hashHistory.replace('/lightbulbs');
 
-    if (!lightbulb.state || lightbulb.state === "undefined") {
+    if (!lightbulb.hasOwnProperty('state') || lightbulb.state === null || lightbulb.state === "undefined") {
       return this.setState({
         errorText: getMuranoErrorText(),
         timeoutId,

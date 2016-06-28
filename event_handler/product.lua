@@ -35,9 +35,11 @@ Timeseries.write({
 })
 local value = kv_read(data.device_sn)
 value[data.alias] = data.value[2]
+-- store the last timestamp from this device
 value["timestamp"] = data.timestamp/1000
 value["pid"] = data.vendor or data.pid
 value["ip"] = data.source_ip
+value["rid"] = data.rid
 
 if value.alerts ~= nil and data.alias == "state" then
   local timerid = data.device_sn .. "_state"
