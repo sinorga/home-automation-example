@@ -5,7 +5,8 @@
   "custom_api_hook": "_init",
   "modules": {
     "auth": "modules/util.lua",
-    "debug": "modules/debug.lua"
+    "debug": "modules/debug.lua",
+    "listen": "modules/listen.lua"
   },
   "event_handler": {
     "device": {

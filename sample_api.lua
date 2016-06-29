@@ -371,6 +371,8 @@ kv_write(sn, value)
 response.message = debug(request.parameters.cmd)
 --#ENDPOINT WEBSOCKET /debug
 response.message = debug(websocket_info.message)
+--#ENDPOINT WEBSOCKET /listen
+response.message = listen(websocketInfo)
 --#ENDPOINT GET /_init
 User.createRole({role_id = "owner", parameter = {{name = "sn"}}})
 User.createRole({role_id = "guest", parameter = {{name = "sn"}}})

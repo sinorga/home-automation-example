@@ -54,4 +54,16 @@ if value.alerts ~= nil and data.alias == "state" then
     end
   end
 end
+
+local listen = value.listen
+if listen ~= nil and listen.sn ~= nil and listen.socket_id ~= nil then
+  if data.device_sn == listen.sn then
+    local msg = {sn = listen.sn, alias = data.alias, value = data.value[2]}
+    Websocket.send({
+      socket_id = listen.socket_id,
+      message = to_json(msg),
+      type="data-text"
+    })
+  end
+end
 kv_write(data.device_sn, value)
