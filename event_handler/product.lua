@@ -34,6 +34,13 @@ Timeseries.write({
   query = data.alias .. ",sn=" .. data.device_sn .. " value=" .. tostring(data.value[2])
 })
 local value = kv_read(data.device_sn)
+if value == nil then
+  value = {
+    humidity = nil,
+    temperature = nil,
+    state = nil
+  }
+end
 value[data.alias] = data.value[2]
 -- store the last timestamp from this device
 value["timestamp"] = data.timestamp/1000

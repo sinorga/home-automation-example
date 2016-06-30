@@ -56,8 +56,12 @@ end
 response.code = 400
 response.message = "Session invalid"
 --#ENDPOINT POST /user/{email}/lightbulbs
+-- Claim a lightbulb with a user's account
+-- Lightbulb must have already written in to the platform
+-- and not been claimed by someone else.
 local sn = tostring(request.body.serialnumber);
 local link = request.body.link;
+local name = request.body.name
 local user = currentUser(request)
 
 if user == nil or user.id == nil then
@@ -65,9 +69,10 @@ if user == nil or user.id == nil then
   return
 end
 
--- only add device if the Product event handler has heard from it
--- (see event_handler/product.lua)
-if not kv_exists(sn) then
+-- only add device if the Product event handler has 
+-- heard from it (see event_handler/product.lua)
+device = kv_read_opt(sn, false)
+if device == nil then
   http_error(404, response)
   return  
 end
@@ -77,6 +82,11 @@ local owners = User.listRoleParamUsers({
   parameter_name = "sn",
   parameter_value = sn
 })
+
+function set_device_name(device, name)
+  device.name = name
+  kv_write(sn, device)
+end
 
 if link == true then
   if #owners == 0 then
@@ -90,9 +100,16 @@ if link == true then
         }}
       }}
     })
-    response.code = resp.status_code
-    response.message = resp.message
-    return
+    if resp.code == nil then
+      -- success, set name and return updated role
+      set_device_name(device, name)
+      response.message = "Ok"
+      response.code = 200
+    else
+      -- error
+      response.message = resp.message
+      response.code = resp.code
+    end
   else
     response.message = "Conflict"
     response.code = 409
@@ -130,12 +147,20 @@ elseif link == false then
       parameter_name = "sn",
       parameter_value = sn
     })
+
+    -- save application-specific data associated with
+    -- device here
+    set_device_name(device, name)
+    response.message = "Added lightbulb"
+    response.code = 200
   end
 else
   response.message = "Conflict"
   response.code = 409
 end
+
 --#ENDPOINT GET /user/{email}/lightbulbs
+-- Get a list of lightbulbs associated with user with email {email}
 local user = currentUser(request)
 if user ~= nil then
   local list = {}

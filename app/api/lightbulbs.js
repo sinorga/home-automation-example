@@ -11,6 +11,7 @@ function addLightbulb(name, serialnumber) {
   const body = {
     link: true,
     serialnumber,
+    name
   };
   return service.post(`/user/${email}/lightbulbs`, body);
 }

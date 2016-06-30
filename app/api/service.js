@@ -26,6 +26,9 @@ export function handleResponse(response) {
     return response.json().then(body => {
       response.payload = body;
       return response;
+    }, reason => {
+      // pass through non-JSON responses
+      return response;
     });
   }
 
