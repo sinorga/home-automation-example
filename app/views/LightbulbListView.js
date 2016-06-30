@@ -65,6 +65,7 @@ export default class LightbulbListView extends React.Component {
    * the class, just after the constructor (except for the render method).
    */
   componentWillMount() {
+    this.mounted = true;
     this.pollLightbulbs();
   }
 
@@ -74,8 +75,8 @@ export default class LightbulbListView extends React.Component {
    * automagically stop our infinite polling loop so we need to stop it.
    */
   componentWillUnmount() {
-    const { timeoutId } = this.state;
-    if (timeoutId) clearTimeout(timeoutId);
+    this.mounted = false;
+    clearTimeout(this.state.timeoutId);
   }
 
   /**
@@ -86,6 +87,7 @@ export default class LightbulbListView extends React.Component {
   pollLightbulbs() {
     api.getLightbulbs()
       .then(response => {
+        if (!this.mounted) return;
         const timeoutId = setTimeout(() => this.pollLightbulbs(), 1000);
         if (response.status === 304) {
           this.setState({ timeoutId });
@@ -98,6 +100,8 @@ export default class LightbulbListView extends React.Component {
         }
       })
       .catch(err => {
+        clearTimeout(this.state.timeoutId);
+        if (!this.mounted) return;
         store.lightbulbs = null;
         this.setState({
           errorText: err.toString(),

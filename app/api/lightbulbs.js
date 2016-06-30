@@ -15,7 +15,12 @@ function addLightbulb(name, serialnumber) {
   return service.post(`/user/${email}/lightbulbs`, body);
 }
 
+function setLightbulbState(serialNumber, state) {
+  return service.post(`/lightbulb/${serialNumber}`, { state: state.toString() });
+}
+
 export default {
   addLightbulb,
   getLightbulbs,
+  setLightbulbState,
 };
