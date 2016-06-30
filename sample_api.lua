@@ -373,6 +373,20 @@ response.message = debug(request.parameters.cmd)
 response.message = debug(websocket_info.message)
 --#ENDPOINT WEBSOCKET /listen
 response.message = listen(websocketInfo)
+--#ENDPOINT WEBSOCKET /echo
+Keystore.set({key="websocket_id", value=tostring(websocket_info.socket_id)})
+Keystore.set({key="server_ip", value=tostring(websocket_info.server_ip)})
+response.message = tostring(websocket_info.socket_id) -- websocket_info.message
+--#ENDPOINT POST /echo/{msg}
+local ret = Keystore.get({key="websocket_id"})
+local websocket_id = ret.value
+local ret = Keystore.get({key="server_ip"})
+local server_ip = ret.value
+local ret2 = nil
+if ret.value ~= nil then
+  ret2 = Websocket.send({message=request.parameters.msg, type="data-text", socket_id=websocket_id, server_ip=server_ip})
+end
+return ret2
 --#ENDPOINT GET /_init
 User.createRole({role_id = "owner", parameter = {{name = "sn"}}})
 User.createRole({role_id = "guest", parameter = {{name = "sn"}}})

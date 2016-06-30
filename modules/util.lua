@@ -1,8 +1,19 @@
+-- get current logged in user from webservice request
+-- returns user table or nil if no user is contained 
+-- in headers
 function currentUser(request)
-  if type(request.headers.cookie) ~= "string" then
+  return currentUserFromHeaders(request.headers)
+end
+
+-- determine the current user from the session information
+-- stored in webservice or websocket request headers.
+-- returns user table or nil if no user is contained 
+-- in headers
+function currentUserFromHeaders(headers)
+  if type(headers.cookie) ~= "string" then
     return nil
   end
-  local _, _, sid = string.find(request.headers.cookie, "sid=([^;]+)")
+  local _, _, sid = string.find(headers.cookie, "sid=([^;]+)")
   if type(sid) ~= "string" then
     return nil
   end

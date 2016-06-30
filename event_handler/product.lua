@@ -56,11 +56,17 @@ if value.alerts ~= nil and data.alias == "state" then
 end
 
 local listen = value.listen
-if listen ~= nil and listen.sn ~= nil and listen.socket_id ~= nil then
+if listen ~= nil and listen.sn ~= nil and listen.socket_id ~= nil and listen.server_ip then
   if data.device_sn == listen.sn then
-    local msg = {sn = listen.sn, alias = data.alias, value = data.value[2]}
+    local msg = {
+      sn = listen.sn, 
+      alias = data.alias, 
+      timestamp = data.value[1],
+      value = data.value[2]
+    }
     Websocket.send({
       socket_id = listen.socket_id,
+      server_ip = listen.server_ip,
       message = to_json(msg),
       type="data-text"
     })

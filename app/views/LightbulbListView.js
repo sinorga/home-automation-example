@@ -39,6 +39,8 @@ import Navbar from '../components/Navbar';
 import PageHeader from '../components/PageHeader';
 import store from '../store';
 
+const POLL_INTERVAL_MS = 30000;
+
 export default class LightbulbListView extends React.Component {
   /**
    * constructor() is where you initialize the react state. By convention it is
@@ -86,7 +88,7 @@ export default class LightbulbListView extends React.Component {
   pollLightbulbs() {
     api.getLightbulbs()
       .then(response => {
-        const timeoutId = setTimeout(() => this.pollLightbulbs(), 1000);
+        const timeoutId = setTimeout(() => this.pollLightbulbs(), POLL_INTERVAL_MS);
         if (response.status === 304) {
           this.setState({ timeoutId });
         } else {
