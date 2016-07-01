@@ -32,9 +32,7 @@ export function handleResponse(response) {
     }
     return response.text().then(body => {
       response.payload = body;
-      return response;
-    }, reason => {
-      // pass through non-JSON responses
+      console.log('payload is ', body);
       return response;
     });
   }

@@ -184,6 +184,7 @@ if user ~= nil then
       end
     end
   end
+  response.headers["Content-type"] = "application/json; charset=utf-8"
   if table.getn(list) == 0 then
     return '[]'
   else
