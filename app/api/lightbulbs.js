@@ -11,11 +11,17 @@ function addLightbulb(name, serialnumber) {
   const body = {
     link: true,
     serialnumber,
+    name
   };
   return service.post(`/user/${email}/lightbulbs`, body);
+}
+
+function setLightbulbState(serialNumber, state) {
+  return service.post(`/lightbulb/${serialNumber}`, { state: state.toString() });
 }
 
 export default {
   addLightbulb,
   getLightbulbs,
+  setLightbulbState,
 };

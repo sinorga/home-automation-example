@@ -64,7 +64,7 @@ const Signup = ({ email, password, confirmPassword, onSubmit }) => (
       </form>
     </main>
     <footer className="version">
-      Version 1.0.3
+      Version 1.0.4
     </footer>
   </div>
 );

@@ -56,8 +56,12 @@ end
 response.code = 400
 response.message = "Session invalid"
 --#ENDPOINT POST /user/{email}/lightbulbs
+-- Claim a lightbulb with a user's account
+-- Lightbulb must have already written in to the platform
+-- and not been claimed by someone else.
 local sn = tostring(request.body.serialnumber);
 local link = request.body.link;
+local name = request.body.name
 local user = currentUser(request)
 
 if user == nil or user.id == nil then
@@ -65,9 +69,10 @@ if user == nil or user.id == nil then
   return
 end
 
--- only add device if the Product event handler has heard from it
--- (see event_handler/product.lua)
-if not kv_exists(sn) then
+-- only add device if the Product event handler has 
+-- heard from it (see event_handler/product.lua)
+device = kv_read_opt(sn, false)
+if device == nil then
   http_error(404, response)
   return  
 end
@@ -77,6 +82,11 @@ local owners = User.listRoleParamUsers({
   parameter_name = "sn",
   parameter_value = sn
 })
+
+function set_device_name(device, name)
+  device.name = name
+  kv_write(sn, device)
+end
 
 if link == true then
   if #owners == 0 then
@@ -90,9 +100,16 @@ if link == true then
         }}
       }}
     })
-    response.code = resp.status_code
-    response.message = resp.message
-    return
+    if resp.code == nil then
+      -- success, set name and return updated role
+      set_device_name(device, name)
+      response.message = "Ok"
+      response.code = 200
+    else
+      -- error
+      response.message = resp.message
+      response.code = resp.code
+    end
   else
     response.message = "Conflict"
     response.code = 409
@@ -130,12 +147,20 @@ elseif link == false then
       parameter_name = "sn",
       parameter_value = sn
     })
+
+    -- save application-specific data associated with
+    -- device here
+    set_device_name(device, name)
+    response.message = "Added lightbulb"
+    response.code = 200
   end
 else
   response.message = "Conflict"
   response.code = 409
 end
+
 --#ENDPOINT GET /user/{email}/lightbulbs
+-- Get a list of lightbulbs associated with user with email {email}
 local user = currentUser(request)
 if user ~= nil then
   local list = {}
@@ -144,13 +169,18 @@ if user ~= nil then
     for _, parameter in ipairs(role.parameters) do
       if parameter.name == "sn" then
         local device_info = kv_read(parameter.value)
-        if role.role_id == "owner" then
-          device_info.type = "full"
+        if device_info == nil then
+          print("device_info returned from kv_read is nil in " .. 
+            "GET /user/{email}/lightbulbs for sn " .. parameter.value)
         else
-          device_info.type = "readonly"
+          if role.role_id == "owner" then
+            device_info.type = "full"
+          else
+            device_info.type = "readonly"
+          end
+          device_info.serialnumber = parameter.value
+          table.insert(list, device_info)
         end
-        device_info.serialnumber = parameter.value
-        table.insert(list, device_info)
       end
     end
   end
@@ -258,6 +288,10 @@ if user ~= nil then
 end
 http_error(403, response)
 --#ENDPOINT POST /lightbulb/{sn}
+-- write to one or more resources of lightbulb with serial number {sn}
+-- Expects JSON object containing one or more properties in 
+-- "state" | "humidity" | "temperature" with the values to be set.
+-- E.g. {"state": 1} to turn the lightbulb on
 local sn = tostring(request.parameters.sn)
 local user = currentUser(request)
 if user ~= nil then
@@ -285,6 +319,7 @@ else
 end
 
 --#ENDPOINT GET /lightbulb/{sn}
+-- get details about a particular lightbulb
 local sn = tostring(request.parameters.sn)
 local user = currentUser(request)
 if user ~= nil then

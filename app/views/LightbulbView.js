@@ -57,9 +57,9 @@ export default class LightbulbView extends React.Component {
     let errorText = null;
     if (store.lightbulbs) {
       lightbulb = store.lightbulbs.filter(bulb => bulb.serialnumber == props.params.serialnumber)[0];
-      if (lightbulb && 
-          (lightbulb.state === null || 
-           !lightbulb.hasOwnProperty('state') || 
+      if (lightbulb &&
+          (lightbulb.state === null ||
+           !lightbulb.hasOwnProperty('state') ||
            lightbulb.state === "undefined")) {
         lightbulb = null;
         errorText = getMuranoErrorText();
@@ -68,6 +68,7 @@ export default class LightbulbView extends React.Component {
 
     this.state = {
       errorText,
+      isChangingBulbState: false,
       lightbulb,
     };
   }
@@ -80,6 +81,7 @@ export default class LightbulbView extends React.Component {
    * the class, just after the constructor (except for the render method).
    */
   componentWillMount() {
+    this.mounted = true;
     this.pollLightbulbs();
   }
 
@@ -89,8 +91,8 @@ export default class LightbulbView extends React.Component {
    * automagically stop our infinite polling loop so we need to stop it.
    */
   componentWillUnmount() {
-    const { timeoutId } = this.state;
-    if (timeoutId) clearTimeout(timeoutId);
+    this.mounted = false;
+    clearTimeout(this.state.timeoutId);
   }
 
   /**
@@ -101,13 +103,15 @@ export default class LightbulbView extends React.Component {
   pollLightbulbs() {
     api.getLightbulbs()
       .then(response => this.handleLightbulbApiResponse(response))
-      .catch(err =>
+      .catch(err => {
+        clearTimeout(this.state.timeoutId);
+        if (!this.mounted) return;
         this.setState({
           errorText: err.toString(),
           lightbulb: null,
           timeoutId: null,
         })
-      );
+      });
   }
 
   /**
@@ -118,6 +122,7 @@ export default class LightbulbView extends React.Component {
    * in the list of lightbulbs it isn't really necessary to update the state.
    */
   handleLightbulbApiResponse(response) {
+    if (!this.mounted) return;
     const timeoutId = setTimeout(() => this.pollLightbulbs(), 1000);
     const { serialnumber } = this.props.params;
     const lightbulbs = response.payload;
@@ -135,6 +140,14 @@ export default class LightbulbView extends React.Component {
     else this.setState({ errorText: null, lightbulb, timeoutId });
   }
 
+  handleSetLightbulbState(serialNumber, state) {
+    if (this.state.isChangingBulbState) return; // no need to send off another request
+    this.setState({ isChangingBulbState: true });
+    api.setLightbulbState(serialNumber, state)
+      .then(() => this.setState({ isChangingBulbState: false }))
+      .catch(err => this.setState({ errorText: err.toString() }));
+  }
+
   /* called when we know there's an error message. It includes a little bit of
    * presentation but don't tell anybody */
   renderErrorMessage() {
@@ -146,17 +159,25 @@ export default class LightbulbView extends React.Component {
   }
 
   renderMainContent() {
-    const { errorText, lightbulb } = this.state;
+    const { errorText, isChangingBulbState, lightbulb } = this.state;
     if (errorText) return this.renderErrorMessage();
     if (!lightbulb) return <LoadingIndicator />;
 
+    const { humidity, name, serialnumber, temperature } = lightbulb;
+    const state = parseInt(lightbulb.state);
+    const toggledState = +!state; // toggle between 0 and 1 - JS magic!!
+
     return (
       <LightbulbDetail
-        humidity={parseInt(lightbulb.humidity)}
-        isOn={parseInt(lightbulb.state) === 1}
-        name={lightbulb.name || '[unnamed]'}
-        serialNumber={lightbulb.serialnumber}
-        temperature={parseInt(lightbulb.temperature)}
+        humidity={parseInt(humidity)}
+        isChangingBulbState={isChangingBulbState}
+        isOn={state === 1}
+        name={name || '[unnamed]'}
+        onSetLightbulbState={() =>
+          this.handleSetLightbulbState(serialnumber, toggledState)
+        }
+        serialNumber={serialnumber}
+        temperature={parseInt(temperature)}
       />
     );
   }

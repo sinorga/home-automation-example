@@ -41,7 +41,7 @@ export default class LogoutView extends React.Component {
           />
         </main>
         <footer className="version">
-          Version 1.0.3
+          Version 1.0.4
         </footer>
       </div>
     );
