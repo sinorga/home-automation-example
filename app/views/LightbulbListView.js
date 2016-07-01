@@ -35,7 +35,7 @@ import LoadingIndicator from '../components/LoadingIndicator';
 import AddLightbulbModal from '../components/AddLightbulbModal';
 import LightbulbList from '../components/LightbulbList';
 import LightbulbListEmptyState from '../components/LightbulbListEmptyState';
-import Navbar from '../components/Navbar';
+import NavBar from '../components/NavBar';
 import PageHeader from '../components/PageHeader';
 import store from '../store';
 
@@ -147,7 +147,7 @@ export default class LightbulbListView extends React.Component {
   render() {
     return (
       <div>
-        <Navbar />
+        <NavBar />
         <PageHeader title="My Home" />
         <div className="container">
           {this.renderMainContent()}

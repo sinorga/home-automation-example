@@ -33,7 +33,7 @@ import api from '../api';
 import MessageBox from '../components/MessageBox';
 import LightbulbDetail from '../components/LightbulbDetail';
 import LoadingIndicator from '../components/LoadingIndicator';
-import Navbar from '../components/Navbar';
+import NavBar from '../components/NavBar';
 import store from '../store';
 
 // Special error for web developers to let them know something is wrong with
@@ -185,7 +185,7 @@ export default class LightbulbView extends React.Component {
   render() {
     return (
       <div>
-        <Navbar showHomeButton />
+        <NavBar showHomeButton />
         {this.renderMainContent()}
       </div>
     );
