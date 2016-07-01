@@ -65,7 +65,7 @@ const Login = ({ errorText, isAuthenticating, onSubmit }) => (
       <FlatButton label="Forgot password?" primary style={{ width: '100%' }} />
     </main>
     <footer className="version">
-      Version 1.0.3
+      Version 1.0.4
     </footer>
   </div>
 );

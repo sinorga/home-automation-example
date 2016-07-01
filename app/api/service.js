@@ -23,7 +23,14 @@ function getFetchObject(method, opts) {
 
 export function handleResponse(response) {
   if (response.status >= 200 && response.status < 300 || response.status === 304) {
-    return response.json().then(body => {
+    const contentType = response.headers.get('Content-Type').split(';')[0].toLowerCase();
+    if (contentType === 'application/json') {
+      return response.json().then(body => {
+        response.payload = body;
+        return response;
+      });
+    }
+    return response.text().then(body => {
       response.payload = body;
       return response;
     }, reason => {
