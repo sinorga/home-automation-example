@@ -42,8 +42,18 @@ export function handleResponse(response) {
 
   if (response.status === 401 || response.status === 403) {
     hashHistory.replace('/login');
+    return Promise.reject(err);
   }
-  return Promise.reject(err);
+
+  return response.text()
+  .catch(() => {
+    return Promise.reject(err);
+  })
+  .then(body => {
+    err.response.payload = body;
+    console.error('error payload is ', body);
+    return Promise.reject(err);
+  });
 }
 
 export function get(path, options) {
