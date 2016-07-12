@@ -121,14 +121,28 @@ export default class SignupView extends React.Component {
     const isFormValid = this.validateForm();
     if (!isFormValid) return;
 
-    api.signup(this.state.email.value, this.state.password.value);
-    hashHistory.push('/signup-confirmation');
+    api.signup(this.state.email.value, this.state.password.value)
+    .then(_resp => {
+      hashHistory.push('/signup-confirmation');
+    })
+    .catch(err => {
+      const stateError = {};
+      const payload = err.response && err.response.payload;
+      if (typeof payload === 'string') {
+        stateError.errorText = payload;
+      } else {
+        stateError.errorText = err.message;
+      }
+
+      this.setState(stateError);
+    });
   }
 
   render() {
-    const { email, password, confirmPassword } = this.state;
+    const { errorText, email, password, confirmPassword } = this.state;
     return (
       <Signup
+        errorText={errorText}
         email={email}
         password={password}
         confirmPassword={confirmPassword}

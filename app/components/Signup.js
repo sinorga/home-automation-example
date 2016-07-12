@@ -4,8 +4,9 @@ import TextField from 'material-ui/TextField';
 import { white } from 'material-ui/styles/colors';
 import React from 'react';
 import { Link } from 'react-router';
+import MessageBox from './MessageBox';
 
-const Signup = ({ email, password, confirmPassword, onSubmit }) => (
+const Signup = ({ errorText, email, password, confirmPassword, onSubmit }) => (
   <div className="auth-page">
     <AppBar
       iconElementRight={
@@ -27,6 +28,7 @@ const Signup = ({ email, password, confirmPassword, onSubmit }) => (
       </div>
 
       <h2 style={{ textAlign: 'center' }}>Sign Up</h2>
+      {errorText && <MessageBox error text={errorText} />}
 
       <form onSubmit={onSubmit}>
         <TextField
@@ -70,6 +72,7 @@ const Signup = ({ email, password, confirmPassword, onSubmit }) => (
 );
 
 Signup.propTypes = {
+  errorText: React.PropTypes.string,
   email: React.PropTypes.object.isRequired,
   password: React.PropTypes.object.isRequired,
   confirmPassword: React.PropTypes.object.isRequired,
