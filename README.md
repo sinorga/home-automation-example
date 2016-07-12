@@ -16,7 +16,9 @@ cd home-automation-example
 
 To deploy the application, first install the [exosite command line tool](http://beta-docs.exosite.com/murano/exosite-cli/). Then initialize the project with your solution and product id using the `--init` option and deploy with `--deploy`.
 
-To build the application, install build tools using `npm install` and then compile the application.
+To build the application, install build tools using `npm install`. The minimum node version we're supporting is 0.12.x.  If you have a lower version you'll encounter errors while running `npm install`.
+
+After installing the packages, compile the application.
 
 ```
 npm run compile

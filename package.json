@@ -7,6 +7,10 @@
     "type": "git",
     "url": "git://github.com/exosite/home-automation-example.git"
   },
+  "engines": {
+    "node": ">=0.12"
+  },
+  "engineStrict": true,
   "license": "Apache-2.0",
   "semistandard": {
     "globals": [
@@ -27,6 +31,7 @@
   },
   "author": "Patrick Barrett <patrickbarrett@exosite.com>",
   "dependencies": {
+    "example-app-minimum-node-version": "file:./node-version-restriction",
     "babel-core": "^6.5.1",
     "babel-loader": "^6.2.2",
     "babel-plugin-transform-object-rest-spread": "^6.6.5",
