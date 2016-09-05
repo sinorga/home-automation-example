@@ -105,9 +105,11 @@ function device_read(pid, rid)
   function get_read_result(alias)
     for k, r in pairs(rpcret) do
       if r.id == alias then
-        if table.getn(r.result) > 0 then
+        if type(r.result) == 'table' and table.getn(r.result) > 0 then
           -- get the value part of the data point
           return r.result[1][2]
+        elseif r.status then
+          return 'error: ' .. r.status
         else
           return nil
         end
