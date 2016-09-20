@@ -16,5 +16,5 @@
       "timer": "event_handler/timer.lua"
     }
   },
-  "cors": {"origin": ["http://localhost:*"]}
+  "cors": {"origin": ["http://localhost:*", "https://*"]}
 }
