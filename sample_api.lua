@@ -178,6 +178,10 @@ if user ~= nil then
           else
             device_info.type = "readonly"
           end
+          -- default so webapp doesn't choke before state is really set
+          if device_info.state == nil then
+            device_info.state = 0
+          end
           device_info.serialnumber = parameter.value
           table.insert(list, device_info)
         end
