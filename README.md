@@ -27,13 +27,7 @@ npm run compile
 To run the web application static assets locally, create a .env file in the root of the project with your solution URL, like this:
 
 ```
-API_BASE_URL=https://<solution-name>.apps.exosite-dev.io
-```
-
-Install this [Chrome plugin](https://chrome.google.com/webstore/detail/modheader/idgpnmonknjnojddfkpgkljpfnnfcklj/related?hl=en) and import this configuration:
-
-```
-{"title":"Local Debugging","hideComment":true,"headers":[{"enabled":true,"name":"","value":"","comment":""}],"respHeaders":[{"enabled":true,"name":"Access-Control-Allow-Origin","value":"http://localhost:8080","comment":""},{"enabled":true,"name":"Access-Control-Allow-Credentials","value":"true","comment":""}],"filters":[],"appendMode":""}
+API_BASE_URL=https://<solution-name>.apps.exosite.io
 ```
 
 Then run this and go to http://localhost:8080 in your browser.
