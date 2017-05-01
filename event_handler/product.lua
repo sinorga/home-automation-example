@@ -30,9 +30,19 @@
   Event time
 --]]
 
-Timeseries.write({
-  query = data.alias .. ",sn=" .. data.device_sn .. " value=" .. tostring(data.value[2])
+-- Example approach for creating historical log of data using TSDB Service
+local metrics = {
+  [data.alias] = tostring(data.value[2])
+}
+local tags = {
+  pid = data.pid,
+  sn = data.device_sn
+}
+Tsdb.write({
+  metrics = metrics, 
+  tags = tags
 })
+
 local value = kv_read(data.device_sn)
 if value == nil then
   value = {
