@@ -14,7 +14,7 @@ git clone git@github.com:exosite/home-automation-example.git
 cd home-automation-example
 ```
 
-To deploy the application, first install the [exosite command line tool](http://beta-docs.exosite.com/murano/exosite-cli/). Then initialize the project with your solution and product id using the `--init` option and deploy with `--deploy`.
+To deploy the application, first install the [Murano command line tool](http://http://docs.exosite.com/development/tools/murano-cli/). Then initialize the Project with your Application and Product id using the `init` option and deploy with `syncup`.
 
 To build the application, install build tools using `npm install`. The minimum node version we're supporting is 0.12.x.  If you have a lower version you'll encounter errors while running `npm install`.
 
