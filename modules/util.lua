@@ -60,22 +60,6 @@ function kv_write(sn, values)
   Keystore.set({key = "sn_" .. sn, value = to_json(values)})
 end
 
-function device_write(sn, alias, value)
-  local device = kv_read(sn)
-  if device.pid == nil then
-    return {status="ERROR", reason="device needs to send data first"}
-  end
-
-  -- save to keystore
-  kv_write(sn, {[alias]=value})
-
-  -- push to device
-  return Lightbulb.setIdentityState({
-                 identity=sn,
-                 [alias]=value
-               })
-end
-
 http_error_codes = {
   [400] = {
     code = 400,

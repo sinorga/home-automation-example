@@ -17,7 +17,7 @@ function addLightbulb(name, serialnumber) {
 }
 
 function setLightbulbState(serialNumber, state) {
-  return service.post(`/lightbulb/${serialNumber}`, { state: state.toString() });
+  return service.post(`/lightbulb/${serialNumber}`, { state: state });
 }
 
 export default {
