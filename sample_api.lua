@@ -69,12 +69,12 @@ if user == nil or user.id == nil then
   return
 end
 
--- only add device if the Product event handler has 
+-- only add device if the Product event handler has
 -- heard from it (see event_handler/product.lua)
 device = kv_read(sn)
 if device == nil then
   http_error(404, response)
-  return  
+  return
 end
 
 local owners = User.listRoleParamUsers({
@@ -170,7 +170,7 @@ if user ~= nil then
       if parameter.name == "sn" then
         local device_info = kv_read(parameter.value)
         if device_info == nil then
-          print("device_info returned from kv_read is nil in " .. 
+          print("device_info returned from kv_read is nil in " ..
             "GET /user/{email}/lightbulbs for sn " .. parameter.value)
         else
           if role.role_id == "owner" then
@@ -294,7 +294,7 @@ end
 http_error(403, response)
 --#ENDPOINT POST /lightbulb/{sn}
 -- write to one or more resources of lightbulb with serial number {sn}
--- Expects JSON object containing one or more properties in 
+-- Expects JSON object containing one or more properties in
 -- "state" | "humidity" | "temperature" with the values to be set.
 -- E.g. {"state": 1} to turn the lightbulb on
 local sn = tostring(request.parameters.sn)
@@ -414,6 +414,7 @@ response.message = debug(websocket_info.message)
 --#ENDPOINT WEBSOCKET /listen
 response.message = listen(websocketInfo)
 --#ENDPOINT GET /_init
+print("hello world init")
 local ret1 = User.createRole({role_id = "owner", parameter = {{name = "sn"}}})
 local ret2 = User.createRole({role_id = "guest", parameter = {{name = "sn"}}})
 local ret = ret1.status_code ~= nil and ret1 or nil
@@ -438,4 +439,3 @@ local out = Tsdb.query({
   tags = tags
 })
 response.message = out
-
